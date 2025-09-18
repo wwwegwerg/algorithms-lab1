@@ -1,0 +1,18 @@
+<Window xmlns="https://github.com/avaloniaui"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:web="clr-namespace:AvaloniaWebView;assembly=Avalonia.WebView"
+        mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="600"
+        x:Class="lab1.MainWindow"
+        Title="lab1">
+    
+    <Grid RowDefinitions="Auto,*">
+        <StackPanel Orientation="Horizontal" Margin="8" Spacing="8">
+            <TextBlock Text="График:" VerticalAlignment="Center" />
+            <ComboBox x:Name="ChartSelector" Width="240" />
+        </StackPanel>
+
+        <web:WebView x:Name="Browser" Grid.Row="1" />
+    </Grid>
+</Window>
