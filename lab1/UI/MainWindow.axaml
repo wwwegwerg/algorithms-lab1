@@ -4,7 +4,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:web="clr-namespace:AvaloniaWebView;assembly=Avalonia.WebView"
         mc:Ignorable="d" d:DesignWidth="900" d:DesignHeight="600"
-        x:Class="lab1.MainWindow"
+        x:Class="lab1.UI.MainWindow"
         Title="lab1">
     
     <Grid RowDefinitions="Auto,*">

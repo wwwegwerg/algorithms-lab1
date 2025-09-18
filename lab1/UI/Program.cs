@@ -1,9 +1,9 @@
-﻿using Avalonia;
-using System;
+﻿using System;
+using Avalonia;
 using Avalonia.ReactiveUI;
 using Avalonia.WebView.Desktop;
 
-namespace lab1;
+namespace lab1.UI;
 
 class Program
 {

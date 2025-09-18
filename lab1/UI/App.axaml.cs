@@ -3,7 +3,7 @@ using Avalonia.Controls.ApplicationLifetimes;
 using Avalonia.Markup.Xaml;
 using AvaloniaWebView;
 
-namespace lab1;
+namespace lab1.UI;
 
 public partial class App : Application
 {
@@ -21,7 +21,7 @@ public partial class App : Application
 
         base.OnFrameworkInitializationCompleted();
     }
-    
+
     public override void RegisterServices()
     {
         base.RegisterServices();
