@@ -1,12 +1,11 @@
 using System.Text;
+using lab1.Benchmarking;
 
 namespace lab1.Algorithms;
 
-public static class MatrixMultiplication
+public class MatrixMultiplication(Matrix m1, Matrix m2) : ITask
 {
-    public static string Name => "Перемножение матриц";
-
-    public static Matrix Run(Matrix m1, Matrix m2)
+    public void Run()
     {
         var result = new Matrix(new int[m1.Rows, m2.Columns]);
         for (var i = 0; i < result.Rows; i++)
@@ -19,8 +18,6 @@ public static class MatrixMultiplication
                 }
             }
         }
-
-        return result;
     }
 }
 

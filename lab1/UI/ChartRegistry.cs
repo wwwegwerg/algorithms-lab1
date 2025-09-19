@@ -14,22 +14,29 @@ public static class ChartRegistry
         {
             ["const"] = () =>
             {
-                var chartData = Experiments.BuildChartDataForConstant(new Benchmark(), 5, 2000);
+                var chartData = Experiments.BuildChartDataForConstant(5, 5, 2000);
                 var chart = Builder.Build2DLineChart(chartData);
                 return chart;
             },
 
             ["sum"] = () =>
             {
-                var chartData = Experiments.BuildChartDataForSum(new Benchmark(), 5, 2000);
+                var chartData = Experiments.BuildChartDataForSum(5, 5, 2000);
                 var chart = Builder.Build2DLineChart(chartData);
                 return chart;
             },
 
             ["product"] = () =>
             {
-                var chartData = Experiments.BuildChartDataForProduct(new Benchmark(), 5, 2000);
+                var chartData = Experiments.BuildChartDataForProduct(5, 5, 2000);
                 var chart = Builder.Build2DLineChart(chartData);
+                return chart;
+            },
+            
+            ["matrix"] = () =>
+            {
+                var chartData = Experiments.BuildChartDataForMatrixMultiplication(5, 5, 2000);
+                var chart = Builder.Build3DSurfaceChart(chartData);
                 return chart;
             }
         };

@@ -1,3 +1,4 @@
+using System;
 using System.Linq;
 using lab1.Benchmarking;
 using Plotly.NET;
@@ -34,5 +35,10 @@ public class ChartBuilder
             .WithXAxisStyle(Title.init(cd.XAxisTitle))
             .WithYAxisStyle(Title.init(cd.YAxisTitle))
             .WithLegend(true);
+    }
+
+    public GenericChart Build3DSurfaceChart(ChartData3D cd)
+    {
+        throw new NotImplementedException();
     }
 }

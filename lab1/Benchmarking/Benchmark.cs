@@ -3,12 +3,16 @@ using System.Diagnostics;
 
 namespace lab1.Benchmarking;
 
-public class Benchmark : IBenchmark
+public static class Benchmark
 {
-    public double MeasureDurationInMs(ITask task, int repetitionCount)
+    public static double MeasureDurationInMs(ITask task, int warmupCount, int repetitionCount)
     {
         // "прогрев" JIT
-        task.Run();
+        for (var i = 0; i < warmupCount; i++)
+        {
+            task.Run();
+        }
+
         // выключение сборщика мусора на момент рана
         GC.Collect();
         GC.WaitForPendingFinalizers();
@@ -19,5 +23,11 @@ public class Benchmark : IBenchmark
             task.Run();
         stopwatch.Stop();
         return stopwatch.Elapsed.TotalMilliseconds / repetitionCount;
+    }
+    
+    public static int MeasureStepsCount<T>(T task) where T : ITask, ILogicalSteps
+    {
+        task.Run();
+        return task.Steps;
     }
 }
