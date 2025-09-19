@@ -36,34 +36,22 @@ public partial class MainWindow : Window
 
     private void LoadSelectedChart()
     {
-        try
+        var key = ChartSelector.SelectedItem as string;
+        if (key is null || !_charts.TryGetValue(key, out var build))
+            return;
+
+        if (!_tempFiles.TryGetValue(key, out var path) || !File.Exists(path))
         {
-            if (Browser is null)
-            {
-                Title = "Не найден <web:WebView x:Name=\"Browser\"/>";
-                return;
-            }
-
-            var key = ChartSelector.SelectedItem as string;
-            if (key is null || !_charts.TryGetValue(key, out var build))
-                return;
-
-            if (!_tempFiles.TryGetValue(key, out var path) || !File.Exists(path))
-            {
-                var chart = build().WithSize(900, 560); // фиксируем размер
-                var html = GenericChart.toEmbeddedHTML(chart);
-                html = EnsureUtf8Head(html);
-                path = Path.Combine(Path.GetTempPath(), $"plot_{Sanitize(key)}_{Guid.NewGuid():N}.html");
-                File.WriteAllText(path, html, new UTF8Encoding(encoderShouldEmitUTF8Identifier: true));
-                _tempFiles[key] = path;
-            }
-
-            Browser.Url = new Uri(path);
+            var chart = build().WithConfig(Config.init(Responsive: true));
+            var html = GenericChart.toEmbeddedHTML(chart);
+            html = EnsureResponsiveUtf8Head(html);
+            path = Path.Combine(Path.GetTempPath(), $"plot_{Sanitize(key)}_{Guid.NewGuid():N}.html");
+            File.WriteAllText(path, html, new UTF8Encoding(encoderShouldEmitUTF8Identifier: true));
+            _tempFiles[key] = path;
         }
-        catch (Exception ex)
-        {
-            Title = "Ошибка: " + ex.Message;
-        }
+
+        Browser.Url = new Uri(path);
+        Title = path;
     }
 
     private static string Sanitize(string name)
@@ -72,39 +60,75 @@ public partial class MainWindow : Window
         return new string(name.Select(c => bad.Contains(c) ? '_' : c).ToArray());
     }
 
-    private static string EnsureUtf8Head(string html)
+    private static string EnsureResponsiveUtf8Head(string html)
     {
-        // если <head> есть — вставим мета-теги сразу после него
+        const string head = @"
+<meta charset=""utf-8""/>
+<meta http-equiv=""Content-Type"" content=""text/html; charset=utf-8""/>
+<meta name=""viewport"" content=""width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no""/>
+<style>
+  html, body {
+    height: 100%;
+    width: 100%;
+    margin: 0; padding: 0;
+    overflow: hidden;            /* WKWebView любит скролл — уберём */
+  }
+  /* plotly контейнеры — на весь доступный размер */
+  .js-plotly-plot, .plot-container, .svg-container, .main-svg, .plotly {
+    width: 100% !important;
+    height: 100% !important;
+  }
+</style>
+<script>
+(function(){
+  function resizePlots(){
+    try {
+      var w = document.documentElement.clientWidth;
+      var h = document.documentElement.clientHeight;
+      var plots = document.getElementsByClassName('js-plotly-plot');
+      for (var i = 0; i < plots.length; i++) {
+        // подстраховочно обновим размеры контейнера
+        plots[i].style.width  = w + 'px';
+        plots[i].style.height = h + 'px';
+        Plotly.relayout(plots[i], { autosize: true });
+        Plotly.Plots.resize(plots[i]);
+      }
+    } catch(e) { /* noop */ }
+  }
+
+  // ResizeObserver даёт самые стабильные ресайзы в WKWebView
+  if (typeof ResizeObserver !== 'undefined') {
+    var ro = new ResizeObserver(resizePlots);
+    ro.observe(document.documentElement);
+  }
+  window.addEventListener('resize', resizePlots);
+  document.addEventListener('DOMContentLoaded', resizePlots);
+  window.addEventListener('load', resizePlots);
+})();
+</script>";
+
+        // если есть <head> — вставим сразу после открывающего тега
         var idxHead = html.IndexOf("<head", StringComparison.OrdinalIgnoreCase);
         if (idxHead >= 0)
         {
             var idxEnd = html.IndexOf('>', idxHead);
             if (idxEnd > idxHead)
             {
-                var inset = "\n<meta charset=\"utf-8\"/>" +
-                            "\n<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"/>\n";
-                // проверим, нет ли уже charset
-                if (html.IndexOf("charset", idxHead, StringComparison.OrdinalIgnoreCase) < 0)
-                    html = html.Insert(idxEnd + 1, inset);
-                return html;
+                return html.Insert(idxEnd + 1, head);
             }
         }
 
-        // если <head> отсутствует — обернём в минимальный HTML
-        return
-            $@"<!doctype html>
+        // оборачиваем, если <head> отсутствует
+        return $@"
+<!doctype html>
 <html lang=""ru"">
-<head>
-<meta charset=""utf-8""/>
-<meta http-equiv=""Content-Type"" content=""text/html; charset=utf-8""/>
-<meta name=""viewport"" content=""width=device-width, initial-scale=1""/>
-<title>Plot</title>
-</head>
+<head>{head}</head>
 <body>
 {html}
 </body>
 </html>";
     }
+
 
     private void OnClosed(object? sender, EventArgs e)
     {

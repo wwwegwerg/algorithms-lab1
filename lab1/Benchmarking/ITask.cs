@@ -2,5 +2,5 @@
 
 public interface ITask
 {
-	void Run();
+    void Run();
 }
