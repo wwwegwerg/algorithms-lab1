@@ -1,47 +1,50 @@
-using System.Runtime.CompilerServices;
-using System.Text;
+using System;
 using lab1.Benchmarking;
 
 namespace lab1.Algorithms;
 
 public class MatrixMultiplicationTask(Matrix m1, Matrix m2) : ITask
 {
-    [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
     public void Run()
     {
-        var result = new Matrix(new int[m1.Rows, m2.Columns]);
-        for (var i = 0; i < result.Rows; i++)
+        var a = m1.Content;
+        var b = m2.Content;
+
+        var aRows = m1.Rows;
+        var aCols = m1.Columns; // == bRows
+        var bCols = m2.Columns;
+
+        var resArray = new int[aRows, bCols];
+
+        for (var i = 0; i < aRows; i++)
         {
-            for (var j = 0; j < result.Columns; j++)
+            for (var j = 0; j < bCols; j++)
             {
-                for (var k = 0; k < m2.Rows; k++)
+                var sum = 0;
+                for (var k = 0; k < aCols; k++)
                 {
-                    result.Content[i, j] += m1.Content[i, k] * m2.Content[k, j];
+                    sum += a[i, k] * b[k, j];
                 }
+
+                resArray[i, j] = sum;
             }
         }
+
+        var result = new Matrix(resArray);
+        GC.KeepAlive(result);
     }
 }
 
-public class Matrix(int[,] matrix)
+public class Matrix
 {
-    public readonly int[,] Content = matrix;
-    public int Rows => Content.GetUpperBound(0) + 1;
-    public int Columns => Content.Length / Rows;
+    public readonly int[,] Content;
+    public readonly int Rows;
+    public readonly int Columns;
 
-    public override string ToString()
+    public Matrix(int[,] matrix)
     {
-        var result = new StringBuilder();
-        for (var i = 0; i < Rows; i++)
-        {
-            for (var j = 0; j < Columns; j++)
-            {
-                result.Append($"{Content[i, j]} ");
-            }
-
-            result.AppendLine();
-        }
-
-        return result.ToString().TrimEnd();
+        Content = matrix;
+        Rows = matrix.GetLength(0);
+        Columns = matrix.GetLength(1);
     }
 }

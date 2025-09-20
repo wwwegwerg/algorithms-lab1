@@ -1,11 +1,10 @@
-using System.Runtime.CompilerServices;
+using System;
 using lab1.Benchmarking;
 
 namespace lab1.Algorithms;
 
 public class SumTask(int[] data) : ITask
 {
-    [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
     public void Run()
     {
         var result = 0;
@@ -13,5 +12,7 @@ public class SumTask(int[] data) : ITask
         {
             result += i;
         }
+
+        GC.KeepAlive(result);
     }
 }

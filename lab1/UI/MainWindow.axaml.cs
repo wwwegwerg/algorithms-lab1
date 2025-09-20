@@ -24,7 +24,7 @@ public partial class MainWindow : Window
             );
 
         ChartSelector.ItemsSource = _charts.Keys.ToList();
-        ChartSelector.SelectedIndex = 3;
+        ChartSelector.SelectedIndex = 0;
         ChartSelector.SelectionChanged += ChartSelector_SelectionChanged;
 
         Opened += (_, _) => LoadSelectedChart();

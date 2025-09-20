@@ -10,6 +10,8 @@ public interface IFactory
     string GetChartTitle();
     string GetXAxisTitle();
     string GetYAxisTitle();
+    Func<double, double> GetApproxFunc();
+    string GetApproxFuncTitle();
 }
 
 public class ConstantTaskFactory : IFactory
@@ -18,6 +20,8 @@ public class ConstantTaskFactory : IFactory
     public string GetChartTitle() => "Постоянная функция";
     public string GetXAxisTitle() => "Размерность вектора v";
     public string GetYAxisTitle() => "Время (мс)";
+    public Func<double, double> GetApproxFunc() => x => 1;
+    public string GetApproxFuncTitle() => "const";
 }
 
 public class SumTaskFactory : IFactory
@@ -26,6 +30,8 @@ public class SumTaskFactory : IFactory
     public string GetChartTitle() => "Сумма элементов";
     public string GetXAxisTitle() => "Размерность вектора v";
     public string GetYAxisTitle() => "Время (мс)";
+    public Func<double, double> GetApproxFunc() => x => x;
+    public string GetApproxFuncTitle() => "n";
 }
 
 public class ProductTaskFactory : IFactory
@@ -34,6 +40,8 @@ public class ProductTaskFactory : IFactory
     public string GetChartTitle() => "Произведение элементов";
     public string GetXAxisTitle() => "Размерность вектора v";
     public string GetYAxisTitle() => "Время (мс)";
+    public Func<double, double> GetApproxFunc() => x => x;
+    public string GetApproxFuncTitle() => "n";
 }
 
 public static class Experiments
@@ -57,13 +65,13 @@ public static class Experiments
             times.Add(new Point(i, time));
         }
 
-        var (funcName, approx) = ComplexityApproximator.Approximate(times);
+        var approx = ComplexityApproximator.Approximate(times, factory.GetApproxFunc());
 
         return new ChartData(
             factory.GetChartTitle(),
             times,
             approx,
-            funcName,
+            factory.GetApproxFuncTitle(),
             factory.GetXAxisTitle(),
             factory.GetYAxisTitle()
         );
@@ -116,16 +124,16 @@ public static class Experiments
             }
         }
 
-        var (funcName, approx) = ComplexityApproximator.ApproximateNM(times);
-        
+        var approx = ComplexityApproximator.Approximate2D(times, (x, y) => x * x * y);
+
         return new ChartData(
             "Матричное произведение",
             times,
             approx,
-            funcName,
-            "12312312312123",
-            "m",
-            "хуемя"
+            "n^2 m",
+            "эта шняга не работает",
+            "и эта тоже",
+            "Время (мс)"
         );
     }
 }

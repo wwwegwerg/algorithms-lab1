@@ -1,11 +1,10 @@
-using System.Runtime.CompilerServices;
+using System;
 using lab1.Benchmarking;
 
 namespace lab1.Algorithms;
 
 public class QuickPowTask(int b, int e) : ITask, ILogicalSteps
 {
-    [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
     public void Run()
     {
         var c = b;
@@ -20,6 +19,8 @@ public class QuickPowTask(int b, int e) : ITask, ILogicalSteps
                 result *= c;
             }
         }
+
+        GC.KeepAlive(result);
     }
 
     public int Steps { get; }

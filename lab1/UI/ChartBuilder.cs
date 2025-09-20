@@ -38,29 +38,40 @@ public class ChartBuilder
     {
         var n = (int)Math.Sqrt(cd.EmpiricalResults.Count);
         var xs = Enumerable.Range(1, n).Select(x => (double)x).ToArray();
-        var zs = new double[n][];
+
+        var empiricalZs = new double[n][];
         for (var i = 0; i < n; i++)
         {
-            zs[i] = new double[n];
+            empiricalZs[i] = new double[n];
             for (var j = 0; j < n; j++)
             {
-                zs[i][j] = cd.EmpiricalResults[i * n + j].ZAxis;
+                empiricalZs[i][j] = cd.EmpiricalResults[i * n + j].ZAxis;
             }
         }
 
         var s1 = Chart
             .Surface<double, double, double, string>(
-                zs,
+                empiricalZs,
                 xs,
                 xs,
                 Name: "Экспериментальные результаты",
                 ShowLegend: true,
-                Opacity: 0.5,
+                Opacity: 0.3,
                 ShowScale: false);
-        
+
+        var theoreticalZs = new double[n][];
+        for (var i = 0; i < n; i++)
+        {
+            theoreticalZs[i] = new double[n];
+            for (var j = 0; j < n; j++)
+            {
+                theoreticalZs[i][j] = cd.TheoreticalResults[i * n + j].ZAxis;
+            }
+        }
+
         var s2 = Chart
             .Surface<double, double, double, string>(
-                zs,
+                theoreticalZs,
                 xs,
                 xs,
                 Name: $"Аппроксимация на основе теоретических оценок ({cd.ApproximationFunction})",
