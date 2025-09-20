@@ -2,7 +2,6 @@ using System;
 using System.Collections.Generic;
 using lab1.Benchmarking;
 using Plotly.NET;
-
 namespace lab1.UI;
 
 public static class ChartRegistry
@@ -35,7 +34,7 @@ public static class ChartRegistry
             
             ["matrix"] = () =>
             {
-                var chartData = Experiments.BuildChartDataForMatrixMultiplication(5, 5, 2000);
+                var chartData = Experiments.BuildChartDataForMatrixMultiplication(5, 5, 40);
                 var chart = Builder.Build3DSurfaceChart(chartData);
                 return chart;
             }

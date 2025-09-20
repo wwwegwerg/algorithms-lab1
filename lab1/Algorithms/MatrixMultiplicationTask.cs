@@ -1,10 +1,12 @@
+using System.Runtime.CompilerServices;
 using System.Text;
 using lab1.Benchmarking;
 
 namespace lab1.Algorithms;
 
-public class MatrixMultiplication(Matrix m1, Matrix m2) : ITask
+public class MatrixMultiplicationTask(Matrix m1, Matrix m2) : ITask
 {
+    [MethodImpl(MethodImplOptions.NoOptimization | MethodImplOptions.NoInlining)]
     public void Run()
     {
         var result = new Matrix(new int[m1.Rows, m2.Columns]);

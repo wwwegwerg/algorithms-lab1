@@ -24,7 +24,7 @@ public partial class MainWindow : Window
             );
 
         ChartSelector.ItemsSource = _charts.Keys.ToList();
-        ChartSelector.SelectedIndex = 0;
+        ChartSelector.SelectedIndex = 3;
         ChartSelector.SelectionChanged += ChartSelector_SelectionChanged;
 
         Opened += (_, _) => LoadSelectedChart();
@@ -137,6 +137,7 @@ public partial class MainWindow : Window
             try
             {
                 if (File.Exists(path)) File.Delete(path);
+                Console.WriteLine($"File {path} deleted");
             }
             catch
             {

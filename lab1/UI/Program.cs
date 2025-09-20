@@ -21,4 +21,26 @@ class Program
             .LogToTrace()
             .UseReactiveUI()
             .UseDesktopWebView();
+
+    // public static void Main(string[] args)
+    // {
+    //     var n = 10;
+    //     var zData = new double[n][];
+    //     for (var i = 0; i < n; i++)
+    //     {
+    //         zData[i] = new double[n];
+    //         for (var j = 0; j < n; j++)
+    //         {
+    //             zData[i][j] = i * n + j;
+    //         }
+    //     }
+    //
+    //     foreach (var z in zData)
+    //     {
+    //         foreach (var x in z)
+    //         {
+    //             Console.WriteLine(x);
+    //         }
+    //     }
+    // }
 }

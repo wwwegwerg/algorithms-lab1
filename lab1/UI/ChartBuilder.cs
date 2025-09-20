@@ -8,37 +8,70 @@ namespace lab1.UI;
 
 public class ChartBuilder
 {
-    public GenericChart Build2DLineChart(ChartData2D cd)
+    public GenericChart Build2DLineChart(ChartData cd)
     {
         var s1 = Chart
-            .Line<int, double, string>(
-                cd.EmpiricalPoints.Select(p => p.XAxis),
-                cd.EmpiricalPoints.Select(p => p.YAxis))
-            .WithTraceInfo(Name: "Экспериментальные результаты")
-            .WithLine(Line.init(
-                Color: Color.fromHex("#3E9BCB"),
-                Width: 2.5
-            ));
+            .Line<double, double, string>(
+                cd.EmpiricalResults.Select(p => p.XAxis),
+                cd.EmpiricalResults.Select(p => p.YAxis),
+                Name: "Экспериментальные результаты",
+                ShowLegend: true,
+                LineColor: Color.fromHex("#3E9BCB"),
+                LineWidth: 2.5);
 
         var s2 = Chart
-            .Line<int, double, string>(
-                cd.TheoreticalPoints.Select(p => p.XAxis),
-                cd.TheoreticalPoints.Select(p => p.YAxis))
-            .WithTraceInfo(Name: "Аппроксимация на основе теоретических оценок")
-            .WithLine(Line.init(
-                Color: Color.fromHex("#FF9A3C"),
-                Width: 2.5
-            ));
+            .Line<double, double, string>(
+                cd.TheoreticalResults.Select(p => p.XAxis),
+                cd.TheoreticalResults.Select(p => p.YAxis),
+                Name: $"Аппроксимация на основе теоретических оценок ({cd.ApproximationFunction})",
+                ShowLegend: true,
+                LineColor: Color.fromHex("#FF9A3C"),
+                LineWidth: 2.5);
+
+        return Plotly.NET.Chart.Combine([s1, s2])
+            .WithTitle(cd.Title)
+            .WithXAxisStyle(Title.init(cd.XAxisTitle))
+            .WithYAxisStyle(Title.init(cd.YAxisTitle));
+    }
+
+    public GenericChart Build3DSurfaceChart(ChartData cd)
+    {
+        var n = (int)Math.Sqrt(cd.EmpiricalResults.Count);
+        var xs = Enumerable.Range(1, n).Select(x => (double)x).ToArray();
+        var zs = new double[n][];
+        for (var i = 0; i < n; i++)
+        {
+            zs[i] = new double[n];
+            for (var j = 0; j < n; j++)
+            {
+                zs[i][j] = cd.EmpiricalResults[i * n + j].ZAxis;
+            }
+        }
+
+        var s1 = Chart
+            .Surface<double, double, double, string>(
+                zs,
+                xs,
+                xs,
+                Name: "Экспериментальные результаты",
+                ShowLegend: true,
+                Opacity: 0.5,
+                ShowScale: false);
+        
+        var s2 = Chart
+            .Surface<double, double, double, string>(
+                zs,
+                xs,
+                xs,
+                Name: $"Аппроксимация на основе теоретических оценок ({cd.ApproximationFunction})",
+                ShowLegend: true,
+                Opacity: 0.5,
+                ShowScale: false);
 
         return Plotly.NET.Chart.Combine([s1, s2])
             .WithTitle(cd.Title)
             .WithXAxisStyle(Title.init(cd.XAxisTitle))
             .WithYAxisStyle(Title.init(cd.YAxisTitle))
-            .WithLegend(true);
-    }
-
-    public GenericChart Build3DSurfaceChart(ChartData3D cd)
-    {
-        throw new NotImplementedException();
+            .WithZAxisStyle(Title.init(cd.ZAxisTitle));
     }
 }
