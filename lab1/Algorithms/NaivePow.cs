@@ -19,11 +19,22 @@ public class NaivePow(int[] data, double x) : ITaskWithSteps
 
     private double Pow(double @base, int exponent)
     {
-        Steps++;
         var result = 1d;
-        for (var i = 0; i < exponent; i++)
+        var k = 0;
+        Steps += 2; // присваивание
+        for (;;)
         {
-            result *= @base;
+            Steps++; // сравнение
+            if (k < exponent)
+            {
+                result *= @base;
+                k++;
+                Steps += 2; // умножение и прибавление
+            }
+            else
+            {
+                break;
+            }
         }
 
         return result;

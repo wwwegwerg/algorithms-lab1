@@ -19,12 +19,19 @@ public class ClassicQuickPow(int[] data, double x) : ITaskWithSteps
 
     private double Pow(double @base, int exponent)
     {
-        Steps++;
         var c = @base;
         var result = 1d;
         var k = exponent;
-        while (k != 0)
+        Steps += 3; // присваивание
+        for (;;)
         {
+            Steps++; // сравнение
+            if (k == 0)
+            {
+                break;
+            }
+
+            Steps++; // сравнение
             if (k % 2 == 0)
             {
                 c *= c;
@@ -35,6 +42,7 @@ public class ClassicQuickPow(int[] data, double x) : ITaskWithSteps
                 result *= c;
                 k--;
             }
+            Steps += 2; // присваивание
         }
 
         return result;

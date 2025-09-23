@@ -19,14 +19,25 @@ public class RecPow(int[] data, double x) : ITaskWithSteps
 
     private double Pow(double @base, int exponent)
     {
-        Steps++;
+        Steps++; // сравнение
         if (exponent == 0)
         {
+            Steps++; // f = 1
             return 1;
         }
 
         var result = Pow(@base, exponent / 2);
-        result = exponent % 2 == 1 ? result * result * @base : result * result;
+        Steps += 2; // присваивание и сравнение
+        if (exponent % 2 == 1)
+        {
+            result *= result;
+        }
+        else
+        {
+            result *= result * @base;
+        }
+
+        Steps++; // присваивание в if'е
         return result;
     }
 }

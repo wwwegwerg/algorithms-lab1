@@ -19,17 +19,35 @@ public class QuickPow(int[] data, double x) : ITaskWithSteps
 
     private double Pow(double @base, int exponent)
     {
-        Steps++;
         var c = @base;
         var k = exponent;
-        var result = k % 2 == 1 ? c : 1;
-        while (k != 0)
+        Steps += 2; // присваивание
+        double result;
+        if (k % 2 == 1)
+        {
+            result = 1;
+        }
+        else
+        {
+            result = c;
+        }
+
+        Steps++; // присваивание в if'е
+        for (;;)
         {
             k /= 2;
             c *= c;
+            Steps += 3; // присваивание и срвнение
             if (k % 2 == 1)
             {
                 result *= c;
+                Steps++;
+            }
+
+            Steps++; // сравнение
+            if (k == 0)
+            {
+                break;
             }
         }
 
