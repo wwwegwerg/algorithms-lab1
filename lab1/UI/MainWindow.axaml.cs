@@ -11,8 +11,9 @@ namespace lab1.UI;
 public partial class MainWindow : Window
 {
     private readonly Dictionary<string, string> _tempFiles = new();
-
     private readonly Dictionary<string, Func<GenericChart>> _charts = ChartRegistry.All;
+    private static readonly string Timestamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
+    private static readonly string OutDir = Path.Combine(AppContext.BaseDirectory, Timestamp);
 
     public MainWindow()
     {
@@ -22,13 +23,15 @@ public partial class MainWindow : Window
             DisplayOptions.init(
                 PlotlyJSReference: PlotlyJSReference.Full
             );
+        
+        Directory.CreateDirectory(OutDir);
 
         ChartSelector.ItemsSource = _charts.Keys.ToList();
         ChartSelector.SelectedIndex = 0;
         ChartSelector.SelectionChanged += ChartSelector_SelectionChanged;
 
         Opened += (_, _) => LoadSelectedChart();
-        Closed += OnClosed;
+        // Closed += OnClosed;
     }
 
     private void ChartSelector_SelectionChanged(object? sender, SelectionChangedEventArgs e)
@@ -45,7 +48,7 @@ public partial class MainWindow : Window
             var chart = build().WithConfig(Config.init(Responsive: true));
             var html = GenericChart.toEmbeddedHTML(chart);
             html = EnsureResponsiveUtf8Head(html);
-            path = Path.Combine(Path.GetTempPath(), $"plot_{Sanitize(key)}_{Guid.NewGuid():N}.html");
+            path = Path.Combine(OutDir, $"plot_{Sanitize(key)}.html");
             File.WriteAllText(path, html, new UTF8Encoding(encoderShouldEmitUTF8Identifier: true));
             _tempFiles[key] = path;
         }
