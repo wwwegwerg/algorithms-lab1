@@ -1,20 +1,27 @@
+using lab1.Benchmarking;
+
 namespace lab1.Algorithms;
 
-public static class BubbleSort
+public class BubbleSort(int[] data) : ITask, ISetup
 {
-    public static string Name => "Сортировка пузырьком (BubbleSort)";
+    private readonly int[] _original = (int[])data.Clone();
+    private int[] _data = (int[])data.Clone();
 
-    public static void Run(double[] data)
+    public void Setup()
     {
-        var n = data.Length;
-        bool swapped;
+        _data = (int[])_original.Clone();
+    }
+
+    public void Run()
+    {
+        var n = _data.Length;
         for (var i = 0; i < n - 1; i++)
         {
-            swapped = false;
+            var swapped = false;
             for (var j = 0; j < n - 1 - i; j++)
             {
-                if (!(data[j] > data[j + 1])) continue;
-                Swap(data, j, j + 1);
+                if (!(_data[j] > _data[j + 1])) continue;
+                Swap(_data, j, j + 1);
                 swapped = true;
             }
 
@@ -22,10 +29,10 @@ public static class BubbleSort
         }
     }
 
-    private static void Swap(double[] a, int i, int j)
+    private static void Swap(int[] a, int i, int j)
     {
         if (i == j) return;
-        double t = a[i];
+        int t = a[i];
         a[i] = a[j];
         a[j] = t;
     }

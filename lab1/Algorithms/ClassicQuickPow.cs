@@ -1,11 +1,25 @@
+using lab1.Benchmarking;
+
 namespace lab1.Algorithms;
 
-public static class ClassicQuickPow
+public class ClassicQuickPow(int[] data, double x) : ITaskWithSteps
 {
-    public static string Name => "Классическое быстрое возведение в степень";
+    public int Steps { get; private set; }
 
-    public static double Pow(double @base, int exponent)
+    public void Run()
     {
+        var result = x;
+        foreach (var e in data)
+        {
+            result = Pow(result, e);
+        }
+
+        Blackhole.Consume(result);
+    }
+
+    private double Pow(double @base, int exponent)
+    {
+        Steps++;
         var c = @base;
         var result = 1d;
         var k = exponent;

@@ -32,9 +32,72 @@ public static class ChartRegistry
                 return chart;
             },
             
+            ["naive polynomial"] = () =>
+            {
+                var chartData = Experiments.BuildChartDataForNaivePolynomial(5, 5, 2000);
+                var chart = Builder.Build2DLineChart(chartData);
+                return chart;
+            },
+            
+            ["horner"] = () =>
+            {
+                var chartData = Experiments.BuildChartDataForHornersMethod(5, 5, 2000);
+                var chart = Builder.Build2DLineChart(chartData);
+                return chart;
+            },
+            
+            ["bubblesort"] = () =>
+            {
+                var chartData = Experiments.BuildChartDataForBubbleSort(5, 5, 2000);
+                var chart = Builder.Build2DLineChart(chartData);
+                return chart;
+            },
+            
+            ["quicksort"] = () =>
+            {
+                var chartData = Experiments.BuildChartDataForQuickSort(5, 5, 2000);
+                var chart = Builder.Build2DLineChart(chartData);
+                return chart;
+            },
+            
+            ["timsort"] = () =>
+            {
+                var chartData = Experiments.BuildChartDataForTimSort(5, 5, 2000);
+                var chart = Builder.Build2DLineChart(chartData);
+                return chart;
+            },
+            
+            ["naive pow"] = () =>
+            {
+                var chartData = Experiments.BuildChartDataForNaivePow(2000);
+                var chart = Builder.Build2DLineChart(chartData);
+                return chart;
+            },
+            
+            ["rec pow"] = () =>
+            {
+                var chartData = Experiments.BuildChartDataForRecPow(2000);
+                var chart = Builder.Build2DLineChart(chartData);
+                return chart;
+            },
+            
+            ["quick pow"] = () =>
+            {
+                var chartData = Experiments.BuildChartDataForQuickPow(2000);
+                var chart = Builder.Build2DLineChart(chartData);
+                return chart;
+            },
+            
+            ["classic quick pow"] = () =>
+            {
+                var chartData = Experiments.BuildChartDataForClassicQuickPow(2000);
+                var chart = Builder.Build2DLineChart(chartData);
+                return chart;
+            },
+            
             ["matrix"] = () =>
             {
-                var chartData = Experiments.BuildChartDataForMatrixMultiplication(5, 5, 40);
+                var chartData = Experiments.BuildChartDataForMatrixMultiplication(5, 5, 20);
                 var chart = Builder.Build3DSurfaceChart(chartData);
                 return chart;
             }

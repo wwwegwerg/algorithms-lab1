@@ -1,17 +1,24 @@
 using System;
 using System.Collections.Generic;
+using lab1.Benchmarking;
 
 namespace lab1.Algorithms;
 
-public static class TimSort
+public class TimSort(int[] data) : ITask
 {
-    public static string Name => "Гибридная сортировка TimSort";
+    private readonly int[] _original = (int[])data.Clone();
+    private int[] _data = (int[])data.Clone();
 
-    public static void Run(double[] a)
+    public void Setup()
     {
-        if (a == null || a.Length < 2) return;
+        _data = (int[])_original.Clone();
+    }
 
-        var n = a.Length;
+    public void Run()
+    {
+        if (_data == null || _data.Length < 2) return;
+
+        var n = _data.Length;
         var minRun = MinRunLength(n);
         var runBase = new List<int>();
         var runLen = new List<int>();
@@ -28,14 +35,14 @@ public static class TimSort
             }
             else
             {
-                if (a[i] <= a[i + 1])
+                if (_data[i] <= _data[i + 1])
                 {
-                    while (i + 1 < n && a[i] <= a[i + 1]) i++;
+                    while (i + 1 < n && _data[i] <= _data[i + 1]) i++;
                 }
                 else
                 {
-                    while (i + 1 < n && a[i] > a[i + 1]) i++;
-                    Reverse(a, runStart, i);
+                    while (i + 1 < n && _data[i] > _data[i + 1]) i++;
+                    Reverse(_data, runStart, i);
                 }
 
                 i++;
@@ -47,7 +54,7 @@ public static class TimSort
             var force = Math.Min(minRun, n - runStart);
             if (len < force)
             {
-                BinaryInsertionSort(a, runStart, runStart + force - 1, runStart + len);
+                BinaryInsertionSort(_data, runStart, runStart + force - 1, runStart + len);
                 i = runStart + force;
                 len = force;
             }
@@ -55,10 +62,10 @@ public static class TimSort
             runBase.Add(runStart);
             runLen.Add(len);
 
-            MergeCollapse(a, runBase, runLen);
+            MergeCollapse(_data, runBase, runLen);
         }
 
-        MergeForceCollapse(a, runBase, runLen);
+        MergeForceCollapse(_data, runBase, runLen);
     }
 
     // ---- TimSort helpers ----
@@ -77,7 +84,7 @@ public static class TimSort
         return n + r;
     }
 
-    private static void BinaryInsertionSort(double[] a, int lo, int hi, int start)
+    private static void BinaryInsertionSort(int[] a, int lo, int hi, int start)
     {
         if (start <= lo) start = lo + 1;
         for (var i = start; i <= hi; i++)
@@ -99,7 +106,7 @@ public static class TimSort
         }
     }
 
-    private static void MergeCollapse(double[] a, List<int> runBase, List<int> runLen)
+    private static void MergeCollapse(int[] a, List<int> runBase, List<int> runLen)
     {
         while (runLen.Count > 1)
         {
@@ -125,7 +132,7 @@ public static class TimSort
         }
     }
 
-    private static void MergeForceCollapse(double[] a, List<int> runBase, List<int> runLen)
+    private static void MergeForceCollapse(int[] a, List<int> runBase, List<int> runLen)
     {
         while (runLen.Count > 1)
         {
@@ -135,7 +142,7 @@ public static class TimSort
         }
     }
 
-    private static void MergeAt(double[] a, List<int> runBase, List<int> runLen, int i)
+    private static void MergeAt(int[] a, List<int> runBase, List<int> runLen, int i)
     {
         var base1 = runBase[i];
         var len1 = runLen[i];
@@ -146,7 +153,7 @@ public static class TimSort
         // Копируем меньший пробег во временный буфер (стабильность сохраняется)
         if (len1 <= len2)
         {
-            var tmp = new double[len1];
+            var tmp = new int[len1];
             Array.Copy(a, base1, tmp, 0, len1);
 
             var i1 = 0;
@@ -165,7 +172,7 @@ public static class TimSort
         }
         else
         {
-            var tmp = new double[len2];
+            var tmp = new int[len2];
             Array.Copy(a, base2, tmp, 0, len2);
 
             var i1 = base1 + len1 - 1;
@@ -188,15 +195,15 @@ public static class TimSort
         runLen.RemoveAt(i + 1);
     }
 
-    private static void Reverse(double[] a, int lo, int hi)
+    private static void Reverse(int[] a, int lo, int hi)
     {
         while (lo < hi) Swap(a, lo++, hi--);
     }
 
-    private static void Swap(double[] a, int i, int j)
+    private static void Swap(int[] a, int i, int j)
     {
         if (i == j) return;
-        double t = a[i];
+        int t = a[i];
         a[i] = a[j];
         a[j] = t;
     }

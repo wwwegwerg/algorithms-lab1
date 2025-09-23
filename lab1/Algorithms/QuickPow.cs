@@ -2,7 +2,7 @@ using lab1.Benchmarking;
 
 namespace lab1.Algorithms;
 
-public class RecPow(int[] data, double x) : ITaskWithSteps
+public class QuickPow(int[] data, double x) : ITaskWithSteps
 {
     public int Steps { get; private set; }
 
@@ -20,13 +20,19 @@ public class RecPow(int[] data, double x) : ITaskWithSteps
     private double Pow(double @base, int exponent)
     {
         Steps++;
-        if (exponent == 0)
+        var c = @base;
+        var k = exponent;
+        var result = k % 2 == 1 ? c : 1;
+        while (k != 0)
         {
-            return 1;
+            k /= 2;
+            c *= c;
+            if (k % 2 == 1)
+            {
+                result *= c;
+            }
         }
 
-        var result = Pow(@base, exponent / 2);
-        result = exponent % 2 == 1 ? result * result * @base : result * result;
         return result;
     }
 }

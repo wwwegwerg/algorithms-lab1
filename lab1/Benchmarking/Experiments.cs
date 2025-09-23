@@ -4,98 +4,328 @@ using lab1.Algorithms;
 
 namespace lab1.Benchmarking;
 
-public interface IFactory
-{
-    ITask CreateTask(int[] data);
-    string GetChartTitle();
-    string GetXAxisTitle();
-    string GetYAxisTitle();
-    Func<double, double> GetApproxFunc();
-    string GetApproxFuncTitle();
-}
-
-public class ConstantTaskFactory : IFactory
-{
-    public ITask CreateTask(int[] data) => new ConstantTask(data);
-    public string GetChartTitle() => "Постоянная функция";
-    public string GetXAxisTitle() => "Размерность вектора v";
-    public string GetYAxisTitle() => "Время (мс)";
-    public Func<double, double> GetApproxFunc() => x => 1;
-    public string GetApproxFuncTitle() => "const";
-}
-
-public class SumTaskFactory : IFactory
-{
-    public ITask CreateTask(int[] data) => new SumTask(data);
-    public string GetChartTitle() => "Сумма элементов";
-    public string GetXAxisTitle() => "Размерность вектора v";
-    public string GetYAxisTitle() => "Время (мс)";
-    public Func<double, double> GetApproxFunc() => x => x;
-    public string GetApproxFuncTitle() => "n";
-}
-
-public class ProductTaskFactory : IFactory
-{
-    public ITask CreateTask(int[] data) => new ProductTask(data);
-    public string GetChartTitle() => "Произведение элементов";
-    public string GetXAxisTitle() => "Размерность вектора v";
-    public string GetYAxisTitle() => "Время (мс)";
-    public Func<double, double> GetApproxFunc() => x => x;
-    public string GetApproxFuncTitle() => "n";
-}
-
 public static class Experiments
 {
     private static readonly Random Rnd = new();
 
-    private static ChartData BuildChartData2DWithDuration(
-        int warmupCount,
-        int repetitionsCount,
-        IFactory factory,
-        int dataSize)
+    public static ChartData BuildChartDataForConstant(
+        int warmupCount, int repetitionsCount, int dataSize)
     {
         var times = new List<Point>();
         var data = new List<int>();
         for (var i = 1; i <= dataSize; i++)
         {
-            data.Add(Rnd.Next());
+            data.Add(Rnd.Next(1, 101));
 
-            var task = factory.CreateTask(data.ToArray());
-            var time = Benchmark.MeasureDurationInMs(task, warmupCount, repetitionsCount);
+            var task = new Constant(data.ToArray());
+            Benchmark.Warmup(task, warmupCount);
+            var time = Benchmark.MeasureDurationInMs(task, repetitionsCount);
             times.Add(new Point(i, time));
         }
 
-        var approx = ComplexityApproximator.Approximate(times, factory.GetApproxFunc());
+        var approx = ComplexityApproximator.Approximate(times, _ => 1);
 
         return new ChartData(
-            factory.GetChartTitle(),
+            "Постоянная функция",
             times,
             approx,
-            factory.GetApproxFuncTitle(),
-            factory.GetXAxisTitle(),
-            factory.GetYAxisTitle()
+            "const",
+            "Размерность вектора v",
+            "Время (мс)"
         );
-    }
-
-    public static ChartData BuildChartDataForConstant(
-        int warmupCount, int repetitionsCount, int dataSize)
-    {
-        var factory = new ConstantTaskFactory();
-        return BuildChartData2DWithDuration(warmupCount, repetitionsCount, factory, dataSize);
     }
 
     public static ChartData BuildChartDataForSum(
         int warmupCount, int repetitionsCount, int dataSize)
     {
-        var factory = new SumTaskFactory();
-        return BuildChartData2DWithDuration(warmupCount, repetitionsCount, factory, dataSize);
+        var times = new List<Point>();
+        var data = new List<int>();
+        for (var i = 1; i <= dataSize; i++)
+        {
+            data.Add(Rnd.Next(1, 101));
+
+            var task = new Sum(data.ToArray());
+            Benchmark.Warmup(task, warmupCount);
+            var time = Benchmark.MeasureDurationInMs(task, repetitionsCount);
+            times.Add(new Point(i, time));
+        }
+
+        var approx = ComplexityApproximator.Approximate(times, x => x);
+
+        return new ChartData(
+            "Сумма элементов",
+            times,
+            approx,
+            "n",
+            "Размерность вектора v",
+            "Время (мс)"
+        );
     }
 
     public static ChartData BuildChartDataForProduct(
         int warmupCount, int repetitionsCount, int dataSize)
     {
-        var factory = new ProductTaskFactory();
-        return BuildChartData2DWithDuration(warmupCount, repetitionsCount, factory, dataSize);
+        var times = new List<Point>();
+        var data = new List<int>();
+        for (var i = 1; i <= dataSize; i++)
+        {
+            data.Add(Rnd.Next(1, 101));
+
+            var task = new Product(data.ToArray());
+            Benchmark.Warmup(task, warmupCount);
+            var time = Benchmark.MeasureDurationInMs(task, repetitionsCount);
+            times.Add(new Point(i, time));
+        }
+
+        var approx = ComplexityApproximator.Approximate(times, x => x);
+
+        return new ChartData(
+            "Произведение элементов",
+            times,
+            approx,
+            "n",
+            "Размерность вектора v",
+            "Время (мс)"
+        );
+    }
+
+    public static ChartData BuildChartDataForNaivePolynomial(
+        int warmupCount, int repetitionsCount, int dataSize)
+    {
+        var times = new List<Point>();
+        var data = new List<int>();
+        for (var i = 1; i <= dataSize; i++)
+        {
+            data.Add(Rnd.Next(1, 101));
+
+            var task = new NaivePolynomial(data.ToArray(), 1.5);
+            Benchmark.Warmup(task, warmupCount);
+            var time = Benchmark.MeasureDurationInMs(task, repetitionsCount);
+            times.Add(new Point(i, time));
+        }
+
+        var approx = ComplexityApproximator.Approximate(times, x => x);
+
+        return new ChartData(
+            "Наивное вычисление многочлена",
+            times,
+            approx,
+            "n",
+            "Размерность вектора v",
+            "Время (мс)"
+        );
+    }
+
+    public static ChartData BuildChartDataForHornersMethod(
+        int warmupCount, int repetitionsCount, int dataSize)
+    {
+        var times = new List<Point>();
+        var data = new List<int>();
+        for (var i = 1; i <= dataSize; i++)
+        {
+            data.Add(Rnd.Next(1, 101));
+
+            var task = new HornersMethod(data.ToArray(), 1.5);
+            Benchmark.Warmup(task, warmupCount);
+            var time = Benchmark.MeasureDurationInMs(task, repetitionsCount);
+            times.Add(new Point(i, time));
+        }
+
+        var approx = ComplexityApproximator.Approximate(times, x => x);
+
+        return new ChartData(
+            "Метод Горнера",
+            times,
+            approx,
+            "n",
+            "Размерность вектора v",
+            "Время (мс)"
+        );
+    }
+
+    public static ChartData BuildChartDataForBubbleSort(
+        int warmupCount, int repetitionsCount, int dataSize)
+    {
+        var times = new List<Point>();
+        var data = new List<int>();
+        for (var i = 1; i <= dataSize; i++)
+        {
+            data.Add(Rnd.Next(1, 101));
+
+            var task = new BubbleSort(data.ToArray());
+            Benchmark.Warmup(task, warmupCount);
+            var time = Benchmark.MeasureDurationInMs(task, repetitionsCount);
+            times.Add(new Point(i, time));
+        }
+
+        var approx = ComplexityApproximator.Approximate(times, x => x);
+
+        return new ChartData(
+            "Сортировка пузырьком (BubbleSort)",
+            times,
+            approx,
+            "n",
+            "Размерность вектора v",
+            "Время (мс)"
+        );
+    }
+
+    public static ChartData BuildChartDataForQuickSort(
+        int warmupCount, int repetitionsCount, int dataSize)
+    {
+        var times = new List<Point>();
+        var data = new List<int>();
+        for (var i = 1; i <= dataSize; i++)
+        {
+            data.Add(Rnd.Next(1, 101));
+
+            var task = new QuickSort(data.ToArray());
+            Benchmark.Warmup(task, warmupCount);
+            var time = Benchmark.MeasureDurationInMs(task, repetitionsCount);
+            times.Add(new Point(i, time));
+        }
+
+        var approx = ComplexityApproximator.Approximate(times, x => x);
+
+        return new ChartData(
+            "Быстрая сортировка (QuickSort)",
+            times,
+            approx,
+            "n",
+            "Размерность вектора v",
+            "Время (мс)"
+        );
+    }
+
+    public static ChartData BuildChartDataForTimSort(
+        int warmupCount, int repetitionsCount, int dataSize)
+    {
+        var times = new List<Point>();
+        var data = new List<int>();
+        for (var i = 1; i <= dataSize; i++)
+        {
+            data.Add(Rnd.Next(1, 101));
+
+            var task = new TimSort(data.ToArray());
+            Benchmark.Warmup(task, warmupCount);
+            var time = Benchmark.MeasureDurationInMs(task, repetitionsCount);
+            times.Add(new Point(i, time));
+        }
+
+        var approx = ComplexityApproximator.Approximate(times, x => x);
+
+        return new ChartData(
+            "Гибридная сортировка TimSort",
+            times,
+            approx,
+            "n",
+            "Размерность вектора v",
+            "Время (мс)"
+        );
+    }
+
+    public static ChartData BuildChartDataForNaivePow(int dataSize)
+    {
+        var steps = new List<Point>();
+        var data = new List<int>();
+        var b = Rnd.NextDouble();
+        for (var i = 1; i <= dataSize; i++)
+        {
+            data.Add(Rnd.Next(1, 101));
+
+            var task = new NaivePow(data.ToArray(), b);
+            var step = Benchmark.MeasureStepsCount(task);
+            steps.Add(new Point(i, step));
+        }
+
+        var approx = ComplexityApproximator.Approximate(steps, x => x);
+
+        return new ChartData(
+            "Простое (наивное) возведение в степень",
+            steps,
+            approx,
+            "n",
+            "Размерность вектора v",
+            "Количество шагов"
+        );
+    }
+
+    public static ChartData BuildChartDataForRecPow(int dataSize)
+    {
+        var steps = new List<Point>();
+        var data = new List<int>();
+        var b = Rnd.NextDouble();
+        for (var i = 1; i <= dataSize; i++)
+        {
+            data.Add(Rnd.Next(1, 101));
+
+            var task = new RecPow(data.ToArray(), b);
+            var step = Benchmark.MeasureStepsCount(task);
+            steps.Add(new Point(i, step));
+        }
+
+        var approx = ComplexityApproximator.Approximate(steps, x => x);
+
+        return new ChartData(
+            "Рекурсивное возведение в степень",
+            steps,
+            approx,
+            "n",
+            "Размерность вектора v",
+            "Количество шагов"
+        );
+    }
+
+    public static ChartData BuildChartDataForQuickPow(int dataSize)
+    {
+        var steps = new List<Point>();
+        var data = new List<int>();
+        var b = Rnd.NextDouble();
+        for (var i = 1; i <= dataSize; i++)
+        {
+            data.Add(Rnd.Next(1, 101));
+
+            var task = new QuickPow(data.ToArray(), b);
+            var step = Benchmark.MeasureStepsCount(task);
+            steps.Add(new Point(i, step));
+        }
+
+        var approx = ComplexityApproximator.Approximate(steps, x => x);
+
+        return new ChartData(
+            "Быстрое возведение в степень",
+            steps,
+            approx,
+            "n",
+            "Размерность вектора v",
+            "Количество шагов"
+        );
+    }
+
+    public static ChartData BuildChartDataForClassicQuickPow(int dataSize)
+    {
+        var steps = new List<Point>();
+        var data = new List<int>();
+        var b = Rnd.NextDouble();
+        for (var i = 1; i <= dataSize; i++)
+        {
+            data.Add(Rnd.Next(1, 101));
+
+            var task = new ClassicQuickPow(data.ToArray(), b);
+            var step = Benchmark.MeasureStepsCount(task);
+            steps.Add(new Point(i, step));
+        }
+
+        var approx = ComplexityApproximator.Approximate(steps, x => x);
+
+        return new ChartData(
+            "Классическое быстрое возведение в степень",
+            steps,
+            approx,
+            "n",
+            "Размерность вектора v",
+            "Количество шагов"
+        );
     }
 
     public static ChartData BuildChartDataForMatrixMultiplication(
@@ -112,14 +342,15 @@ public static class Experiments
                 {
                     for (var j = 0; j < m; j++)
                     {
-                        var val = Rnd.Next();
+                        var val = Rnd.Next(1, 101);
                         data1[i, j] = val;
                         data2[j, i] = val;
                     }
                 }
 
                 var task = new MatrixMultiplicationTask(new Matrix(data1), new Matrix(data2));
-                var time = Benchmark.MeasureDurationInMs(task, warmupCount, repetitionsCount);
+                Benchmark.Warmup(task, warmupCount);
+                var time = Benchmark.MeasureDurationInMs(task, repetitionsCount);
                 times.Add(new Point(n, m, time));
             }
         }

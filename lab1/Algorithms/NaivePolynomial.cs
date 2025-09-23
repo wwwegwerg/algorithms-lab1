@@ -1,19 +1,18 @@
 using System;
+using lab1.Benchmarking;
 
 namespace lab1.Algorithms;
 
-public static class NaivePolynomial
+public class NaivePolynomial(int[] data, double x) : ITask
 {
-    public static string Name => "Наивное вычисление многочлена";
-
-    public static double Run(double[] coefficients, double x)
+    public void Run()
     {
         var result = 0d;
-        for (var i = 0; i < coefficients.Length; i++)
+        for (var i = 0; i < data.Length; i++)
         {
-            result += coefficients[i] * Math.Pow(x, i);
+            result += data[i] * Math.Pow(x, i);
         }
 
-        return result;
+        Blackhole.Consume(result);
     }
 }

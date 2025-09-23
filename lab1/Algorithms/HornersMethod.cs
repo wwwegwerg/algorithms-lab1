@@ -1,17 +1,17 @@
+using lab1.Benchmarking;
+
 namespace lab1.Algorithms;
 
-public static class HornersMethod
+public class HornersMethod(int[] data, double x) : ITask
 {
-    public static string Name => "Метод Горнера";
-
-    public static double Run(double[] coefficients, double x)
+    public void Run()
     {
         var result = 0d;
-        for (var i = coefficients.Length - 1; i >= 0; i--)
+        for (var i = data.Length - 1; i >= 0; i--)
         {
-            result = result * x + coefficients[i];
+            result = result * x + data[i];
         }
 
-        return result;
+        Blackhole.Consume(result);
     }
 }

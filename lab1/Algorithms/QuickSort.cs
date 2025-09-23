@@ -1,16 +1,24 @@
+using lab1.Benchmarking;
+
 namespace lab1.Algorithms;
 
-public static class QuickSort
+public class QuickSort(int[] data) : ITask, ISetup
 {
-    public static string Name => "Быстрая сортировка (QuickSort)";
+    private readonly int[] _original = (int[])data.Clone();
+    private int[] _data = (int[])data.Clone();
 
-    public static void Run(double[] v)
+    public void Setup()
     {
-        if (v == null || v.Length < 2) return;
-        Run(v, 0, v.Length - 1);
+        _data = (int[])_original.Clone();
     }
 
-    private static void Run(double[] a, int lo, int hi)
+    public void Run()
+    {
+        if (_data == null || _data.Length < 2) return;
+        Run(_data, 0, _data.Length - 1);
+    }
+
+    private static void Run(int[] a, int lo, int hi)
     {
         const int INSERTION_SORT_THRESHOLD = 16;
 
@@ -38,7 +46,7 @@ public static class QuickSort
         }
     }
 
-    private static int PartitionHoare(double[] a, int lo, int hi)
+    private static int PartitionHoare(int[] a, int lo, int hi)
     {
         var pivot = a[(lo + hi) / 2];
         var i = lo - 1;
@@ -61,7 +69,7 @@ public static class QuickSort
         }
     }
 
-    private static void InsertionSortRange(double[] a, int lo, int hi)
+    private static void InsertionSortRange(int[] a, int lo, int hi)
     {
         for (var i = lo + 1; i <= hi; i++)
         {
@@ -77,10 +85,10 @@ public static class QuickSort
         }
     }
 
-    private static void Swap(double[] a, int i, int j)
+    private static void Swap(int[] a, int i, int j)
     {
         if (i == j) return;
-        double t = a[i];
+        int t = a[i];
         a[i] = a[j];
         a[j] = t;
     }

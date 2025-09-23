@@ -1,9 +1,8 @@
-using System;
 using lab1.Benchmarking;
 
 namespace lab1.Algorithms;
 
-public class ProductTask(int[] data) : ITask
+public class Product(int[] data) : ITask
 {
     public void Run()
     {
@@ -13,6 +12,6 @@ public class ProductTask(int[] data) : ITask
             result *= i;
         }
 
-        GC.KeepAlive(result);
+        Blackhole.Consume(result);
     }
 }
