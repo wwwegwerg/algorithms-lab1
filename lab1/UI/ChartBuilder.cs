@@ -56,7 +56,6 @@ public class ChartBuilder
                 xs,
                 Name: "Экспериментальные результаты",
                 ShowLegend: true,
-                Opacity: 0.3,
                 ShowScale: false);
 
         var theoreticalZs = new double[n][];
@@ -76,7 +75,6 @@ public class ChartBuilder
                 xs,
                 Name: $"Аппроксимация на основе теоретических оценок ({cd.ApproximationFunction})",
                 ShowLegend: true,
-                Opacity: 0.5,
                 ShowScale: false);
 
         return Plotly.NET.Chart.Combine([s1, s2])

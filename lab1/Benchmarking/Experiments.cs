@@ -346,7 +346,6 @@ public static class Experiments
             var numbers = File.ReadAllText("Benchmarking/data.txt")
                 .Split([' ', '\t', '\r', '\n'], StringSplitOptions.RemoveEmptyEntries)
                 .Select(s => int.Parse(s, CultureInfo.InvariantCulture)).ToArray();
-            Console.WriteLine($"OK. Прочитано чисел: {numbers.Length}");
             return numbers;
         }
     }
