@@ -13,93 +13,121 @@ public static class ChartRegistry
         {
             ["const"] = () =>
             {
-                var chartData = Experiments.BuildChartDataForConstant(5, 5, 2000);
-                var chart = Builder.Build2DLineChart(chartData);
+                var cd = Experiments.BuildChartDataForConstant(5, 5, 2000);
+                var chart = Builder.Build2DLineChart(cd);
                 return chart;
             },
 
             ["sum"] = () =>
             {
-                var chartData = Experiments.BuildChartDataForSum(5, 5, 2000);
-                var chart = Builder.Build2DLineChart(chartData);
+                var cd = Experiments.BuildChartDataForSum(5, 5, 2000);
+                var chart = Builder.Build2DLineChart(cd);
                 return chart;
             },
 
             ["product"] = () =>
             {
-                var chartData = Experiments.BuildChartDataForProduct(5, 5, 2000);
-                var chart = Builder.Build2DLineChart(chartData);
+                var cd = Experiments.BuildChartDataForProduct(5, 5, 2000);
+                var chart = Builder.Build2DLineChart(cd);
                 return chart;
             },
             
             ["naive polynomial"] = () =>
             {
-                var chartData = Experiments.BuildChartDataForNaivePolynomial(5, 5, 2000);
-                var chart = Builder.Build2DLineChart(chartData);
+                var cd = Experiments.BuildChartDataForNaivePolynomial(5, 5, 2000);
+                var chart = Builder.Build2DLineChart(cd);
                 return chart;
             },
             
             ["horner"] = () =>
             {
-                var chartData = Experiments.BuildChartDataForHornersMethod(5, 5, 2000);
-                var chart = Builder.Build2DLineChart(chartData);
+                var cd = Experiments.BuildChartDataForHornersMethod(5, 5, 2000);
+                var chart = Builder.Build2DLineChart(cd);
                 return chart;
             },
             
             ["bubblesort"] = () =>
             {
-                var chartData = Experiments.BuildChartDataForBubbleSort(5, 5, 2000);
-                var chart = Builder.Build2DLineChart(chartData);
+                var cd = Experiments.BuildChartDataForBubbleSort(5, 5, 2000);
+                var chart = Builder.Build2DLineChart(cd);
                 return chart;
             },
             
             ["quicksort"] = () =>
             {
-                var chartData = Experiments.BuildChartDataForQuickSort(5, 5, 2000);
-                var chart = Builder.Build2DLineChart(chartData);
+                var cd = Experiments.BuildChartDataForQuickSort(5, 5, 2000);
+                var chart = Builder.Build2DLineChart(cd);
                 return chart;
             },
             
             ["timsort"] = () =>
             {
-                var chartData = Experiments.BuildChartDataForTimSort(5, 5, 2000);
-                var chart = Builder.Build2DLineChart(chartData);
+                var cd = Experiments.BuildChartDataForTimSort(5, 5, 2000);
+                var chart = Builder.Build2DLineChart(cd);
                 return chart;
             },
             
             ["naive pow"] = () =>
             {
-                var chartData = Experiments.BuildChartDataForNaivePow(2000);
-                var chart = Builder.Build2DLineChart(chartData);
+                var cd = Experiments.BuildChartDataForNaivePow(2000);
+                var chart = Builder.Build2DLineChart(cd);
                 return chart;
             },
             
             ["rec pow"] = () =>
             {
-                var chartData = Experiments.BuildChartDataForRecPow(2000);
-                var chart = Builder.Build2DLineChart(chartData);
+                var cd = Experiments.BuildChartDataForRecPow(2000);
+                var chart = Builder.Build2DLineChart(cd);
                 return chart;
             },
             
             ["quick pow"] = () =>
             {
-                var chartData = Experiments.BuildChartDataForQuickPow(2000);
-                var chart = Builder.Build2DLineChart(chartData);
+                var cd = Experiments.BuildChartDataForQuickPow(2000);
+                var chart = Builder.Build2DLineChart(cd);
                 return chart;
             },
             
             ["classic quick pow"] = () =>
             {
-                var chartData = Experiments.BuildChartDataForClassicQuickPow(2000);
-                var chart = Builder.Build2DLineChart(chartData);
+                var cd = Experiments.BuildChartDataForClassicQuickPow(2000);
+                var chart = Builder.Build2DLineChart(cd);
                 return chart;
             },
             
             ["matrix"] = () =>
             {
-                var chartData = Experiments.BuildChartDataForMatrixMultiplication(5, 5, 20);
-                var chart = Builder.Build3DSurfaceChart(chartData);
+                var cd = Experiments.BuildChartDataForMatrixMultiplication(5, 5, 20);
+                var chart = Builder.Build3DSurfaceChart(cd);
                 return chart;
-            }
+            },
+            
+            ["max"] = () =>
+            {
+                var cd = Experiments.BuildChartDataForMax(5, 5, 2000);
+                var chart = Builder.Build2DLineChart(cd);
+                return chart;
+            },
+            
+            ["shuffle"] = () =>
+            {
+                var cd = Experiments.BuildChartDataForShuffle(5, 5, 2000);
+                var chart = Builder.Build2DLineChart(cd);
+                return chart;
+            },
+            
+            ["xor"] = () =>
+            {
+                var cd = Experiments.BuildChartDataForXor(5, 5, 2000);
+                var chart = Builder.Build2DLineChart(cd);
+                return chart;
+            },
+            
+            ["prefix sums"] = () =>
+            {
+                var cd = Experiments.BuildChartDataForPrefixSums(5, 5, 2000);
+                var chart = Builder.Build2DLineChart(cd);
+                return chart;
+            },
         };
 }

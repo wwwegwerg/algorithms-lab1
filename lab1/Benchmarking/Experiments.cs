@@ -371,6 +371,122 @@ public static class Experiments
         );
     }
 
+    public static ChartData BuildChartDataForMax(
+        int warmupCount, int repetitionsCount, int dataSize)
+    {
+        var times = new List<Point>();
+        var data = new List<int>();
+        for (var i = 1; i <= dataSize; i++)
+        {
+            data.Add(Data[i]);
+    
+            var task = new Max(data.ToArray());
+            Benchmark.Warmup(task, warmupCount);
+            var time = Benchmark.MeasureDurationInMs(task, repetitionsCount);
+            times.Add(new Point(i, time));
+        }
+    
+        var (funcName, approx) = ComplexityApproximator.Approximate(times);
+    
+        return new ChartData(
+            "Линейное нахождение максимума",
+            times,
+            approx,
+            funcName,
+            "Размерность вектора v",
+            "Время (мс)"
+        );
+    }
+    
+    public static ChartData BuildChartDataForShuffle(
+        int warmupCount, int repetitionsCount, int dataSize)
+    {
+        var times = new List<Point>();
+        var data = new List<int>();
+        for (var i = 1; i <= dataSize; i++)
+        {
+            data.Add(Data[i]);
+    
+            var task = new Shuffle(data.ToArray());
+            Benchmark.Warmup(task, warmupCount);
+            var time = Benchmark.MeasureDurationInMs(task, repetitionsCount);
+            times.Add(new Point(i, time));
+        }
+    
+        var (funcName, approx) = ComplexityApproximator.Approximate(times);
+    
+        return new ChartData(
+            "Перемешивание Фишера-Йейтса",
+            times,
+            approx,
+            funcName,
+            "Размерность вектора v",
+            "Время (мс)"
+        );
+    }
+    
+    public static ChartData BuildChartDataForXor(
+        int warmupCount, int repetitionsCount, int dataSize)
+    {
+        var times = new List<Point>();
+        var data = new List<int>();
+        var rnd = new Random();
+        for (var i = 1; i <= dataSize; i++)
+        {
+            data.Clear();
+            for (var j = 0; j <= i; j++)
+            {
+                data.Add(j);
+            }
+            
+            var idxToRemove = rnd.Next(i);
+            data.RemoveAt(idxToRemove);
+    
+            var task = new Xor(data.ToArray());
+            Benchmark.Warmup(task, warmupCount);
+            var time = Benchmark.MeasureDurationInMs(task, repetitionsCount);
+            times.Add(new Point(i, time));
+        }
+    
+        var (funcName, approx) = ComplexityApproximator.Approximate(times);
+    
+        return new ChartData(
+            "Поиск пропущенного числа через XOR",
+            times,
+            approx,
+            funcName,
+            "Размерность вектора v",
+            "Время (мс)"
+        );
+    }
+    
+    public static ChartData BuildChartDataForPrefixSums(
+        int warmupCount, int repetitionsCount, int dataSize)
+    {
+        var times = new List<Point>();
+        var data = new List<int>();
+        for (var i = 1; i <= dataSize; i++)
+        {
+            data.Add(Data[i]);
+    
+            var task = new PrefixSums(data.ToArray());
+            Benchmark.Warmup(task, warmupCount);
+            var time = Benchmark.MeasureDurationInMs(task, repetitionsCount);
+            times.Add(new Point(i, time));
+        }
+    
+        var (funcName, approx) = ComplexityApproximator.Approximate(times);
+    
+        return new ChartData(
+            "Префиксные суммы",
+            times,
+            approx,
+            funcName,
+            "Размерность вектора v",
+            "Время (мс)"
+        );
+    }
+
     private static class Helper
     {
         public static int[] ReadData()
