@@ -7,42 +7,79 @@ namespace lab1.Benchmarking;
 public static class ComplexityApproximator
 {
     private readonly record struct FitResult(string Name, double Scale, double R2);
+    
+    private static IEnumerable<(string name, Func<double, double> f)> DefaultCandidates() =>
+    [
+        ("1", _ => 1),
+        ("log n", x => x > 1 ? Math.Log(x) : 0.0),
+        ("n", x => x),
+        ("n log n", x => x > 1 ? x * Math.Log(x) : 0.0),
+        ("n^2", x => x * x),
+        ("n^3", x => x * x * x)
+    ];
 
-    public static List<Point> Approximate(
-        IEnumerable<Point> data,
-        Func<double, double> func)
+    public static (string, List<Point>) Approximate(
+        IEnumerable<Point> data)
     {
         if (data is null) throw new ArgumentNullException(nameof(data));
 
         var pts = data.ToArray();
-        if (pts.Length == 0) throw new ArgumentException("Пустые данные.", nameof(data));
+        if (pts.Length == 0)
+            throw new ArgumentException("Пустые данные.", nameof(data));
 
+        // Разворачиваем в массивы для МНК
         var xs = new double[pts.Length];
         var ys = new double[pts.Length];
         for (var i = 0; i < pts.Length; i++)
         {
-            xs[i] = pts[i].XAxis; // x = n
-            ys[i] = pts[i].YAxis; // y = время
+            xs[i] = pts[i].XAxis;
+            ys[i] = pts[i].YAxis;
         }
 
-        var fvals = new double[pts.Length];
-        for (var i = 0; i < pts.Length; i++)
+        var candidates = DefaultCandidates();
+        FitResult? best = null;
+        Func<double, double>? bestFunc = null;
+        foreach (var (name, f) in candidates)
         {
-            var v = func(xs[i]);
-            if (double.IsNaN(v) || double.IsInfinity(v)) v = 0.0;
-            fvals[i] = v;
+            var fvals = new double[pts.Length];
+            var allZero = true;
+            for (var i = 0; i < pts.Length; i++)
+            {
+                var v = f(xs[i]);
+                if (double.IsNaN(v) || double.IsInfinity(v)) v = 0.0;
+                fvals[i] = v;
+                if (v != 0.0) allZero = false;
+            }
+
+            if (allZero) continue;
+            var c = FitScaleLeastSquares(ys, fvals);
+            var yPred = new double[pts.Length];
+            for (var i = 0; i < pts.Length; i++) yPred[i] = c * fvals[i];
+            var r2 = RSquared(ys, yPred);
+            var fit = new FitResult(name, c, r2);
+            if (best is null || fit.R2 > best.Value.R2)
+            {
+                best = fit;
+                bestFunc = f;
+            }
         }
 
-        var scale = FitScaleLeastSquares(ys, fvals);
+        if (best is null || bestFunc is null)
+            return ("none", []);
+            // throw new InvalidOperationException(
+            //     "Не удалось подобрать валидного кандидата. Проверьте данные (x>0 для лог-функций).");
 
+        // Возвращаем те же x, но с аппроксимированными ŷ
         var result = new List<Point>(pts.Length);
         for (var i = 0; i < pts.Length; i++)
         {
-            var yHat = scale * fvals[i];
-            result.Add(new Point(pts[i].XAxis, yHat));
+            var fx = bestFunc(xs[i]);
+            if (double.IsNaN(fx) || double.IsInfinity(fx)) fx = 0.0;
+            var yHat = best.Value.Scale * fx;
+            result.Add(new Point((int)xs[i], yHat));
         }
 
-        return result;
+        return (best.Value.Name, result);
     }
 
     public static List<Point> Approximate2D(
@@ -52,7 +89,8 @@ public static class ComplexityApproximator
         if (data is null) throw new ArgumentNullException(nameof(data));
 
         var pts = data.ToArray();
-        if (pts.Length == 0) throw new ArgumentException("Пустые данные.", nameof(data));
+        if (pts.Length == 0)
+            throw new ArgumentException("Пустые данные.", nameof(data));
 
         var xs = new double[pts.Length];
         var ys = new double[pts.Length];
@@ -84,29 +122,6 @@ public static class ComplexityApproximator
         return result;
     }
 
-    // private static IEnumerable<(string name, Func<double, double> f)> DefaultCandidates1D() =>
-    // [
-    //     ("log n", x => x > 1 ? Math.Log(x) : 0.0),
-    //     ("n", x => x),
-    //     ("n log n", x => x > 1 ? x * Math.Log(x) : 0.0),
-    //     ("n^2", x => x * x),
-    //     ("n^3", x => x * x * x)
-    // ];
-    //
-    // private static IEnumerable<(string name, Func<double, double, double> f)> DefaultCandidates2D() =>
-    // [
-    //     ("n", (n, m) => n),
-    //     ("m", (n, m) => m),
-    //     ("n + m", (n, m) => n + m),
-    //     ("n m", (n, m) => n * m),
-    //     ("n m log n", (n, m) => (n > 1 ? n * Math.Log(n) : 0.0) * m),
-    //     ("n m log m", (n, m) => (m > 1 ? m * Math.Log(m) : 0.0) * n),
-    //     ("n^2 m", (n, m) => n * n * m), // стандартное O(n^2 m) для (n×m)·(m×n)
-    //     ("n m^2", (n, m) => n * m * m),
-    //     ("n^2 m + n m^2", (n, m) => n * n * m + n * m * m),
-    //     ("n^3", (n, m) => n * n * n) // на случай квадратных n≈m
-    // ];
-
     // МНК-оценка масштаба: c = (Σ t_i f_i)/(Σ f_i^2)
     private static double FitScaleLeastSquares(IReadOnlyList<double> t, IReadOnlyList<double> f)
     {
@@ -118,5 +133,23 @@ public static class ComplexityApproximator
         }
 
         return den == 0 ? 0 : num / den;
+    }
+
+    // Коэффициент детерминации R^2
+    private static double RSquared(IReadOnlyList<double> yTrue, IReadOnlyList<double> yPred)
+    {
+        double mean = 0;
+        for (var i = 0; i < yTrue.Count; i++) mean += yTrue[i];
+        mean /= yTrue.Count;
+        double ssTot = 0, ssRes = 0;
+        for (var i = 0; i < yTrue.Count; i++)
+        {
+            var d1 = yTrue[i] - mean;
+            var d2 = yTrue[i] - yPred[i];
+            ssTot += d1 * d1;
+            ssRes += d2 * d2;
+        }
+
+        return ssTot == 0 ? 1 : 1 - ssRes / ssTot;
     }
 }

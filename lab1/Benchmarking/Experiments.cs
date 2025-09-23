@@ -1,12 +1,15 @@
 using System;
 using System.Collections.Generic;
+using System.Globalization;
+using System.IO;
+using System.Linq;
 using lab1.Algorithms;
 
 namespace lab1.Benchmarking;
 
 public static class Experiments
 {
-    private static readonly Random Rnd = new();
+    private static readonly int[] Data = Helper.ReadData();
 
     public static ChartData BuildChartDataForConstant(
         int warmupCount, int repetitionsCount, int dataSize)
@@ -15,7 +18,7 @@ public static class Experiments
         var data = new List<int>();
         for (var i = 1; i <= dataSize; i++)
         {
-            data.Add(Rnd.Next(1, 101));
+            data.Add(Data[i]);
 
             var task = new Constant(data.ToArray());
             Benchmark.Warmup(task, warmupCount);
@@ -23,13 +26,13 @@ public static class Experiments
             times.Add(new Point(i, time));
         }
 
-        var approx = ComplexityApproximator.Approximate(times, _ => 1);
+        var (funcName, approx) = ComplexityApproximator.Approximate(times);
 
         return new ChartData(
             "Постоянная функция",
             times,
             approx,
-            "const",
+            funcName,
             "Размерность вектора v",
             "Время (мс)"
         );
@@ -42,7 +45,7 @@ public static class Experiments
         var data = new List<int>();
         for (var i = 1; i <= dataSize; i++)
         {
-            data.Add(Rnd.Next(1, 101));
+            data.Add(Data[i]);
 
             var task = new Sum(data.ToArray());
             Benchmark.Warmup(task, warmupCount);
@@ -50,13 +53,13 @@ public static class Experiments
             times.Add(new Point(i, time));
         }
 
-        var approx = ComplexityApproximator.Approximate(times, x => x);
+        var (funcName, approx) = ComplexityApproximator.Approximate(times);
 
         return new ChartData(
             "Сумма элементов",
             times,
             approx,
-            "n",
+            funcName,
             "Размерность вектора v",
             "Время (мс)"
         );
@@ -69,7 +72,7 @@ public static class Experiments
         var data = new List<int>();
         for (var i = 1; i <= dataSize; i++)
         {
-            data.Add(Rnd.Next(1, 101));
+            data.Add(Data[i]);
 
             var task = new Product(data.ToArray());
             Benchmark.Warmup(task, warmupCount);
@@ -77,13 +80,13 @@ public static class Experiments
             times.Add(new Point(i, time));
         }
 
-        var approx = ComplexityApproximator.Approximate(times, x => x);
+        var (funcName, approx) = ComplexityApproximator.Approximate(times);
 
         return new ChartData(
             "Произведение элементов",
             times,
             approx,
-            "n",
+            funcName,
             "Размерность вектора v",
             "Время (мс)"
         );
@@ -96,7 +99,7 @@ public static class Experiments
         var data = new List<int>();
         for (var i = 1; i <= dataSize; i++)
         {
-            data.Add(Rnd.Next(1, 101));
+            data.Add(Data[i]);
 
             var task = new NaivePolynomial(data.ToArray(), 1.5);
             Benchmark.Warmup(task, warmupCount);
@@ -104,13 +107,13 @@ public static class Experiments
             times.Add(new Point(i, time));
         }
 
-        var approx = ComplexityApproximator.Approximate(times, x => x);
+        var (funcName, approx) = ComplexityApproximator.Approximate(times);
 
         return new ChartData(
             "Наивное вычисление многочлена",
             times,
             approx,
-            "n",
+            funcName,
             "Размерность вектора v",
             "Время (мс)"
         );
@@ -123,7 +126,7 @@ public static class Experiments
         var data = new List<int>();
         for (var i = 1; i <= dataSize; i++)
         {
-            data.Add(Rnd.Next(1, 101));
+            data.Add(Data[i]);
 
             var task = new HornersMethod(data.ToArray(), 1.5);
             Benchmark.Warmup(task, warmupCount);
@@ -131,13 +134,13 @@ public static class Experiments
             times.Add(new Point(i, time));
         }
 
-        var approx = ComplexityApproximator.Approximate(times, x => x);
+        var (funcName, approx) = ComplexityApproximator.Approximate(times);
 
         return new ChartData(
             "Метод Горнера",
             times,
             approx,
-            "n",
+            funcName,
             "Размерность вектора v",
             "Время (мс)"
         );
@@ -150,7 +153,7 @@ public static class Experiments
         var data = new List<int>();
         for (var i = 1; i <= dataSize; i++)
         {
-            data.Add(Rnd.Next(1, 101));
+            data.Add(Data[i]);
 
             var task = new BubbleSort(data.ToArray());
             Benchmark.Warmup(task, warmupCount);
@@ -158,13 +161,13 @@ public static class Experiments
             times.Add(new Point(i, time));
         }
 
-        var approx = ComplexityApproximator.Approximate(times, x => x);
+        var (funcName, approx) = ComplexityApproximator.Approximate(times);
 
         return new ChartData(
             "Сортировка пузырьком (BubbleSort)",
             times,
             approx,
-            "n",
+            funcName,
             "Размерность вектора v",
             "Время (мс)"
         );
@@ -177,7 +180,7 @@ public static class Experiments
         var data = new List<int>();
         for (var i = 1; i <= dataSize; i++)
         {
-            data.Add(Rnd.Next(1, 101));
+            data.Add(Data[i]);
 
             var task = new QuickSort(data.ToArray());
             Benchmark.Warmup(task, warmupCount);
@@ -185,13 +188,13 @@ public static class Experiments
             times.Add(new Point(i, time));
         }
 
-        var approx = ComplexityApproximator.Approximate(times, x => x);
+        var (funcName, approx) = ComplexityApproximator.Approximate(times);
 
         return new ChartData(
             "Быстрая сортировка (QuickSort)",
             times,
             approx,
-            "n",
+            funcName,
             "Размерность вектора v",
             "Время (мс)"
         );
@@ -204,7 +207,7 @@ public static class Experiments
         var data = new List<int>();
         for (var i = 1; i <= dataSize; i++)
         {
-            data.Add(Rnd.Next(1, 101));
+            data.Add(Data[i]);
 
             var task = new TimSort(data.ToArray());
             Benchmark.Warmup(task, warmupCount);
@@ -212,13 +215,13 @@ public static class Experiments
             times.Add(new Point(i, time));
         }
 
-        var approx = ComplexityApproximator.Approximate(times, x => x);
+        var (funcName, approx) = ComplexityApproximator.Approximate(times);
 
         return new ChartData(
             "Гибридная сортировка TimSort",
             times,
             approx,
-            "n",
+            funcName,
             "Размерность вектора v",
             "Время (мс)"
         );
@@ -228,23 +231,23 @@ public static class Experiments
     {
         var steps = new List<Point>();
         var data = new List<int>();
-        var b = Rnd.NextDouble();
+        var b = Data[0];
         for (var i = 1; i <= dataSize; i++)
         {
-            data.Add(Rnd.Next(1, 101));
+            data.Add(Data[i]);
 
             var task = new NaivePow(data.ToArray(), b);
             var step = Benchmark.MeasureStepsCount(task);
             steps.Add(new Point(i, step));
         }
 
-        var approx = ComplexityApproximator.Approximate(steps, x => x);
+        var (funcName, approx) = ComplexityApproximator.Approximate(steps);
 
         return new ChartData(
             "Простое (наивное) возведение в степень",
             steps,
             approx,
-            "n",
+            funcName,
             "Размерность вектора v",
             "Количество шагов"
         );
@@ -254,23 +257,23 @@ public static class Experiments
     {
         var steps = new List<Point>();
         var data = new List<int>();
-        var b = Rnd.NextDouble();
+        var b = Data[0];
         for (var i = 1; i <= dataSize; i++)
         {
-            data.Add(Rnd.Next(1, 101));
+            data.Add(Data[i]);
 
             var task = new RecPow(data.ToArray(), b);
             var step = Benchmark.MeasureStepsCount(task);
             steps.Add(new Point(i, step));
         }
 
-        var approx = ComplexityApproximator.Approximate(steps, x => x);
+        var (funcName, approx) = ComplexityApproximator.Approximate(steps);
 
         return new ChartData(
             "Рекурсивное возведение в степень",
             steps,
             approx,
-            "n",
+            funcName,
             "Размерность вектора v",
             "Количество шагов"
         );
@@ -280,23 +283,23 @@ public static class Experiments
     {
         var steps = new List<Point>();
         var data = new List<int>();
-        var b = Rnd.NextDouble();
+        var b = Data[0];
         for (var i = 1; i <= dataSize; i++)
         {
-            data.Add(Rnd.Next(1, 101));
+            data.Add(Data[i]);
 
             var task = new QuickPow(data.ToArray(), b);
             var step = Benchmark.MeasureStepsCount(task);
             steps.Add(new Point(i, step));
         }
 
-        var approx = ComplexityApproximator.Approximate(steps, x => x);
+        var (funcName, approx) = ComplexityApproximator.Approximate(steps);
 
         return new ChartData(
             "Быстрое возведение в степень",
             steps,
             approx,
-            "n",
+            funcName,
             "Размерность вектора v",
             "Количество шагов"
         );
@@ -306,23 +309,23 @@ public static class Experiments
     {
         var steps = new List<Point>();
         var data = new List<int>();
-        var b = Rnd.NextDouble();
+        var b = Data[0];
         for (var i = 1; i <= dataSize; i++)
         {
-            data.Add(Rnd.Next(1, 101));
+            data.Add(Data[i]);
 
             var task = new ClassicQuickPow(data.ToArray(), b);
             var step = Benchmark.MeasureStepsCount(task);
             steps.Add(new Point(i, step));
         }
 
-        var approx = ComplexityApproximator.Approximate(steps, x => x);
+        var (funcName, approx) = ComplexityApproximator.Approximate(steps);
 
         return new ChartData(
             "Классическое быстрое возведение в степень",
             steps,
             approx,
-            "n",
+            funcName,
             "Размерность вектора v",
             "Количество шагов"
         );
@@ -342,7 +345,7 @@ public static class Experiments
                 {
                     for (var j = 0; j < m; j++)
                     {
-                        var val = Rnd.Next(1, 101);
+                        var val = Data[i];
                         data1[i, j] = val;
                         data2[j, i] = val;
                     }
@@ -366,5 +369,37 @@ public static class Experiments
             "и эта тоже",
             "Время (мс)"
         );
+    }
+
+    private static class Helper
+    {
+        public static int[] ReadData()
+        {
+            try
+            {
+                var numbers = File
+                    .ReadAllText("Benchmarking/data.txt")
+                    .Split([' ', '\t', '\r', '\n'], StringSplitOptions.RemoveEmptyEntries)
+                    .Select(s => int.Parse(s, CultureInfo.InvariantCulture))
+                    .ToArray();
+
+                Console.WriteLine($"OK. Прочитано чисел: {numbers.Length}");
+                return numbers;
+            }
+            catch (FileNotFoundException)
+            {
+                Console.Error.WriteLine("Файл data.txt не найден в текущей папке.");
+            }
+            catch (FormatException)
+            {
+                Console.Error.WriteLine("В файле встречено нецелое число или неверный формат.");
+            }
+            catch (Exception ex)
+            {
+                Console.Error.WriteLine($"Ошибка: {ex.Message}");
+            }
+
+            return [];
+        }
     }
 }
