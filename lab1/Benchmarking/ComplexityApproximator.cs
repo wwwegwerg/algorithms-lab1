@@ -7,7 +7,7 @@ namespace lab1.Benchmarking;
 public static class ComplexityApproximator
 {
     private readonly record struct FitResult(string Name, double Scale, double R2);
-    
+
     private static IEnumerable<(string name, Func<double, double> f)> DefaultCandidates() =>
     [
         ("1", _ => 1),
@@ -21,11 +21,7 @@ public static class ComplexityApproximator
     public static (string, List<Point>) Approximate(
         IEnumerable<Point> data)
     {
-        if (data is null) throw new ArgumentNullException(nameof(data));
-
         var pts = data.ToArray();
-        if (pts.Length == 0)
-            throw new ArgumentException("Пустые данные.", nameof(data));
 
         // Разворачиваем в массивы для МНК
         var xs = new double[pts.Length];
@@ -66,8 +62,8 @@ public static class ComplexityApproximator
 
         if (best is null || bestFunc is null)
             return ("none", []);
-            // throw new InvalidOperationException(
-            //     "Не удалось подобрать валидного кандидата. Проверьте данные (x>0 для лог-функций).");
+        // throw new InvalidOperationException(
+        //     "Не удалось подобрать валидного кандидата. Проверьте данные (x>0 для лог-функций).");
 
         // Возвращаем те же x, но с аппроксимированными ŷ
         var result = new List<Point>(pts.Length);
@@ -86,11 +82,7 @@ public static class ComplexityApproximator
         IEnumerable<Point> data,
         Func<double, double, double> func)
     {
-        if (data is null) throw new ArgumentNullException(nameof(data));
-
         var pts = data.ToArray();
-        if (pts.Length == 0)
-            throw new ArgumentException("Пустые данные.", nameof(data));
 
         var xs = new double[pts.Length];
         var ys = new double[pts.Length];

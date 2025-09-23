@@ -111,7 +111,7 @@ public static class Experiments
     {
         var b = Data[0];
         return Build1DSteps(
-            "Простое (наивное) возведение в степень",
+            "Наивное возведение в степень",
             "Размерность вектора v",
             "Количество шагов",
             dataSize,

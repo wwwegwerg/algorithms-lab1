@@ -16,7 +16,7 @@ public class TimSort(int[] data) : ITask
 
     public void Run()
     {
-        if (_data == null || _data.Length < 2) return;
+        if (_data.Length < 2) return;
 
         var n = _data.Length;
         var minRun = MinRunLength(n);
@@ -29,11 +29,7 @@ public class TimSort(int[] data) : ITask
             var runStart = i;
 
             // Найти естественный пробег (в т.ч. понижающийся — развернём)
-            if (i == n - 1)
-            {
-                i++;
-            }
-            else
+            if (i != n - 1)
             {
                 if (_data[i] <= _data[i + 1])
                 {
@@ -44,9 +40,9 @@ public class TimSort(int[] data) : ITask
                     while (i + 1 < n && _data[i] > _data[i + 1]) i++;
                     Reverse(_data, runStart, i);
                 }
-
-                i++;
             }
+
+            i++;
 
             var len = i - runStart;
 
@@ -197,14 +193,11 @@ public class TimSort(int[] data) : ITask
 
     private static void Reverse(int[] a, int lo, int hi)
     {
-        while (lo < hi) Swap(a, lo++, hi--);
-    }
-
-    private static void Swap(int[] a, int i, int j)
-    {
-        if (i == j) return;
-        int t = a[i];
-        a[i] = a[j];
-        a[j] = t;
+        while (lo < hi)
+        {
+            if (lo != hi) (a[lo], a[hi]) = (a[hi], a[lo]);
+            lo++;
+            hi--;
+        }
     }
 }

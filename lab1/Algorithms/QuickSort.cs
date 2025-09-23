@@ -14,7 +14,7 @@ public class QuickSort(int[] data) : ITask, ISetup
 
     public void Run()
     {
-        if (_data == null || _data.Length < 2) return;
+        if (_data.Length < 2) return;
         Run(_data, 0, _data.Length - 1);
     }
 
@@ -65,7 +65,7 @@ public class QuickSort(int[] data) : ITask, ISetup
             } while (a[j] > pivot);
 
             if (i >= j) return j;
-            Swap(a, i, j);
+            (a[i], a[j]) = (a[j], a[i]);
         }
     }
 
@@ -83,13 +83,5 @@ public class QuickSort(int[] data) : ITask, ISetup
 
             a[j + 1] = x;
         }
-    }
-
-    private static void Swap(int[] a, int i, int j)
-    {
-        if (i == j) return;
-        int t = a[i];
-        a[i] = a[j];
-        a[j] = t;
     }
 }
