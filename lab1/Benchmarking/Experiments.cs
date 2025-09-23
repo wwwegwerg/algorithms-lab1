@@ -172,7 +172,7 @@ public static class Experiments
                     }
                 }
 
-                var task = new MatrixMultiplicationTask(new Matrix(data1), new Matrix(data2));
+                var task = new MatrixMultiplication(new Matrix(data1), new Matrix(data2));
                 Benchmark.Warmup(task, warmupCount);
                 var time = Benchmark.MeasureDurationInMs(task, repetitionsCount);
                 times.Add(new Point(n, m, time));

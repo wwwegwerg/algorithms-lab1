@@ -3,7 +3,7 @@ using lab1.Benchmarking;
 
 namespace lab1.Algorithms;
 
-public class MatrixMultiplicationTask(Matrix m1, Matrix m2) : ITask
+public class MatrixMultiplication(Matrix m1, Matrix m2) : ITask
 {
     public void Run()
     {
