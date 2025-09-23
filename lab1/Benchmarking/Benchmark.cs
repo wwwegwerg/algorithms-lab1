@@ -20,24 +20,13 @@ public static class Benchmark
 
     public static double MeasureDurationInMs(ITask task, int repetitionCount)
     {
-        for (var i = 0; i < Math.Min(repetitionCount, 512); i++)
-        {
-            if (task is ISetup s)
-            {
-                s.Setup();
-            }
-
-            task.Run();
-        }
-
         GC.Collect();
         GC.WaitForPendingFinalizers();
         GC.Collect();
 
-        var stopwatch = Stopwatch.StartNew();
+        var stopwatch = new Stopwatch();
         for (var i = 0; i < repetitionCount; i++)
         {
-            stopwatch.Stop();
             if (task is ISetup s)
             {
                 s.Setup();
@@ -45,6 +34,7 @@ public static class Benchmark
 
             stopwatch.Start();
             task.Run();
+            stopwatch.Stop();
         }
 
         stopwatch.Stop();

@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -23,8 +24,9 @@ public partial class MainWindow : Window
             DisplayOptions.init(
                 PlotlyJSReference: PlotlyJSReference.Full
             );
-        
+
         Directory.CreateDirectory(OutDir);
+        Preload();
 
         ChartSelector.ItemsSource = _charts.Keys.ToList();
         ChartSelector.SelectedIndex = 0;
@@ -148,5 +150,27 @@ public partial class MainWindow : Window
         }
 
         _tempFiles.Clear();
+    }
+
+    private void Preload()
+    {
+        var keys = _charts.Keys.ToList();
+        var sw = new Stopwatch();
+        foreach (var key in keys)
+        {
+            _charts.TryGetValue(key, out var build);
+
+            sw.Restart();
+            var chart = build().WithConfig(Config.init(Responsive: true));
+            sw.Stop();
+
+            var html = GenericChart.toEmbeddedHTML(chart);
+            html = EnsureResponsiveUtf8Head(html);
+            var path = Path.Combine(OutDir, $"plot_{Sanitize(key)}.html");
+            File.WriteAllText(path, html, new UTF8Encoding(encoderShouldEmitUTF8Identifier: true));
+            _tempFiles[key] = path;
+
+            Console.WriteLine($"{Sanitize(key)} – {sw.Elapsed.TotalSeconds}s");
+        }
     }
 }
