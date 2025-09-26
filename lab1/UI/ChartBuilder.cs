@@ -31,7 +31,7 @@ public class ChartBuilder
                 LineWidth: 2.5);
 
         return Plotly.NET.Chart.Combine([s1, s2])
-            .WithTitle($"{cd.Title} – {cd.TotalExecTimeSeconds}s")
+            .WithTitle(cd.Title)
             .WithXAxisStyle(Title.init(cd.XAxisTitle))
             .WithYAxisStyle(Title.init(cd.YAxisTitle));
     }
@@ -82,7 +82,7 @@ public class ChartBuilder
                 ShowScale: false);
 
         return Plotly.NET.Chart.Combine([s1, s2])
-            .WithTitle($"{cd.Title} – {cd.TotalExecTimeSeconds}s")
+            .WithTitle(cd.Title)
             .WithXAxisStyle(Title.init(cd.XAxisTitle))
             .WithYAxisStyle(Title.init(cd.YAxisTitle))
             .WithZAxisStyle(Title.init(cd.ZAxisTitle));
