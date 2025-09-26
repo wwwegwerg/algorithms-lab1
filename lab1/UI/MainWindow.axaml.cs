@@ -50,13 +50,30 @@ public partial class MainWindow : Window
             var chart = build().WithConfig(Config.init(Responsive: true));
             var html = GenericChart.toEmbeddedHTML(chart);
             html = EnsureResponsiveUtf8Head(html);
-            path = Path.Combine(OutDir, $"plot_{Sanitize(key)}.html");
+            path = Path.Combine(OutDir, $"{Sanitize(key)}.html");
             File.WriteAllText(path, html, new UTF8Encoding(encoderShouldEmitUTF8Identifier: true));
             _tempFiles[key] = path;
         }
 
         Browser.Url = new Uri(path);
         Title = path;
+    }
+
+    private void Preload()
+    {
+        var keys = _charts.Keys.ToList();
+        foreach (var key in keys)
+        {
+            _charts.TryGetValue(key, out var build);
+
+            var chart = build().WithConfig(Config.init(Responsive: true));
+
+            var html = GenericChart.toEmbeddedHTML(chart);
+            html = EnsureResponsiveUtf8Head(html);
+            var path = Path.Combine(OutDir, $"{Sanitize(key)}.html");
+            File.WriteAllText(path, html, new UTF8Encoding(encoderShouldEmitUTF8Identifier: true));
+            _tempFiles[key] = path;
+        }
     }
 
     private static string Sanitize(string name)
@@ -150,27 +167,5 @@ public partial class MainWindow : Window
         }
 
         _tempFiles.Clear();
-    }
-
-    private void Preload()
-    {
-        var keys = _charts.Keys.ToList();
-        var sw = new Stopwatch();
-        foreach (var key in keys)
-        {
-            _charts.TryGetValue(key, out var build);
-
-            sw.Restart();
-            var chart = build().WithConfig(Config.init(Responsive: true));
-            sw.Stop();
-
-            var html = GenericChart.toEmbeddedHTML(chart);
-            html = EnsureResponsiveUtf8Head(html);
-            var path = Path.Combine(OutDir, $"plot_{Sanitize(key)}.html");
-            File.WriteAllText(path, html, new UTF8Encoding(encoderShouldEmitUTF8Identifier: true));
-            _tempFiles[key] = path;
-
-            Console.WriteLine($"{Sanitize(key)} – {sw.Elapsed.TotalSeconds}s");
-        }
     }
 }

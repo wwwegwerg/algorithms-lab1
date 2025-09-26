@@ -11,8 +11,11 @@ public class ChartData
     public readonly string XAxisTitle;
     public readonly string YAxisTitle;
     public readonly string ZAxisTitle;
+    public readonly double TotalExecTimeSeconds;
 
-    public ChartData(string title, IList<Point> empiricalResults, IList<Point> theoreticalResults, string approximationFunction, string xAxisTitle, string yAxisTitle, string zAxisTitle = "")
+    public ChartData(string title, IList<Point> empiricalResults, IList<Point> theoreticalResults,
+        string approximationFunction, string xAxisTitle, string yAxisTitle, double totalExecTimeSeconds,
+        string zAxisTitle = "")
     {
         Title = title;
         EmpiricalResults = empiricalResults;
@@ -21,5 +24,6 @@ public class ChartData
         XAxisTitle = xAxisTitle;
         YAxisTitle = yAxisTitle;
         ZAxisTitle = zAxisTitle;
+        TotalExecTimeSeconds = totalExecTimeSeconds;
     }
 }

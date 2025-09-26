@@ -31,7 +31,7 @@ public class MatrixMultiplication(Matrix m1, Matrix m2) : ITask
         }
 
         var result = new Matrix(resArray);
-        GC.KeepAlive(result);
+        Blackhole.Consume(result);
     }
 }
 

@@ -10,6 +10,8 @@ public class ChartBuilder
 {
     public GenericChart Build2DLineChart(ChartData cd)
     {
+        Console.WriteLine($"{cd.Title} – {cd.TotalExecTimeSeconds}s");
+
         var s1 = Chart
             .Line<double, double, string>(
                 cd.EmpiricalResults.Select(p => p.XAxis),
@@ -29,13 +31,15 @@ public class ChartBuilder
                 LineWidth: 2.5);
 
         return Plotly.NET.Chart.Combine([s1, s2])
-            .WithTitle(cd.Title)
+            .WithTitle($"{cd.Title} – {cd.TotalExecTimeSeconds}s")
             .WithXAxisStyle(Title.init(cd.XAxisTitle))
             .WithYAxisStyle(Title.init(cd.YAxisTitle));
     }
 
     public GenericChart Build3DSurfaceChart(ChartData cd)
     {
+        Console.WriteLine($"{cd.Title} – {cd.TotalExecTimeSeconds}s");
+
         var n = (int)Math.Sqrt(cd.EmpiricalResults.Count);
         var xs = Enumerable.Range(1, n).Select(x => (double)x).ToArray();
 
@@ -78,7 +82,7 @@ public class ChartBuilder
                 ShowScale: false);
 
         return Plotly.NET.Chart.Combine([s1, s2])
-            .WithTitle(cd.Title)
+            .WithTitle($"{cd.Title} – {cd.TotalExecTimeSeconds}s")
             .WithXAxisStyle(Title.init(cd.XAxisTitle))
             .WithYAxisStyle(Title.init(cd.YAxisTitle))
             .WithZAxisStyle(Title.init(cd.ZAxisTitle));

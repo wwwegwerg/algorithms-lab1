@@ -8,13 +8,12 @@ public class RecPow(int[] data, double x) : ITaskWithSteps
 
     public void Run()
     {
-        var result = x;
+        double result;
         foreach (var e in data)
         {
-            result = Pow(result, e);
+            result = Pow(x, e);
+            Blackhole.Consume(result);
         }
-
-        Blackhole.Consume(result);
     }
 
     private double Pow(double @base, int exponent)

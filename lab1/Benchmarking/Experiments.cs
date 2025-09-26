@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -154,6 +155,7 @@ public static class Experiments
     public static ChartData BuildChartDataForMatrixMultiplication(int warmupCount, int repetitionsCount, int dataSize)
     {
         var times = new List<Point>(dataSize * dataSize);
+        var sw = Stopwatch.StartNew();
 
         for (var n = 1; n <= dataSize; n++)
         {
@@ -179,15 +181,16 @@ public static class Experiments
             }
         }
 
+        sw.Stop();
         var approx = ComplexityApproximator.Approximate2D(times, (x, y) => x * x * y);
-
         return new ChartData(
-            "Матричное произведение",
+            "Обычное матричное произведение",
             times,
             approx,
             "n^2·m",
             "n (строки A / столбцы B)",
             "m (столбцы A / строки B)",
+            sw.Elapsed.TotalSeconds,
             "Время (мс)"
         );
     }
@@ -220,6 +223,8 @@ public static class Experiments
     {
         // Спец-генерация входа: числа 0..i с одним пропуском
         var times = new List<Point>(dataSize);
+        var sw = Stopwatch.StartNew();
+
         for (var i = 1; i <= dataSize; i++)
         {
             var arr = GenerateSequenceWithOneMissing(i);
@@ -229,6 +234,7 @@ public static class Experiments
             times.Add(new Point(i, time));
         }
 
+        sw.Stop();
         var (funcName, approx) = ComplexityApproximator.Approximate(times);
         return new ChartData(
             "Поиск пропущенного числа через XOR",
@@ -236,7 +242,8 @@ public static class Experiments
             approx,
             funcName,
             "Размерность вектора v",
-            "Время (мс)"
+            "Время (мс)",
+            sw.Elapsed.TotalSeconds
         );
     }
 
@@ -265,6 +272,7 @@ public static class Experiments
     {
         var inputs = BuildPrefixInputs(dataSize);
         var times = new List<Point>(dataSize);
+        var sw = Stopwatch.StartNew();
 
         for (var i = 1; i <= dataSize; i++)
         {
@@ -274,8 +282,15 @@ public static class Experiments
             times.Add(new Point(i, time));
         }
 
+        sw.Stop();
         var (funcName, approx) = ComplexityApproximator.Approximate(times);
-        return new ChartData(title, times, approx, funcName, xLabel, yLabel);
+        return new ChartData(title,
+            times,
+            approx,
+            funcName,
+            xLabel,
+            yLabel,
+            sw.Elapsed.TotalSeconds);
     }
 
     private static ChartData Build1DSteps(
@@ -285,18 +300,27 @@ public static class Experiments
         int dataSize,
         Func<int[], ITaskWithSteps> taskFactory)
     {
-        var inputs = BuildPrefixInputs(dataSize);
+        var inputs = new List<int>();
         var steps = new List<Point>(dataSize);
+        var sw = Stopwatch.StartNew();
 
         for (var i = 1; i <= dataSize; i++)
         {
-            var task = taskFactory(inputs[i]);
+            inputs.Add(i);
+            var task = taskFactory(inputs.ToArray());
             var step = Benchmark.MeasureStepsCount(task);
             steps.Add(new Point(i, step));
         }
 
+        sw.Stop();
         var (funcName, approx) = ComplexityApproximator.Approximate(steps);
-        return new ChartData(title, steps, approx, funcName, xLabel, yLabel);
+        return new ChartData(title,
+            steps,
+            approx,
+            funcName,
+            xLabel,
+            yLabel,
+            sw.Elapsed.TotalSeconds);
     }
 
     // -------- Генераторы входов --------
