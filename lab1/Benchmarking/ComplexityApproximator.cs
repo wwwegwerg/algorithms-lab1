@@ -17,6 +17,14 @@ public static class ComplexityApproximator
         ("n^2", x => x * x),
         ("n^3", x => x * x * x)
     ];
+    
+    // Кандидаты для 2D (n, m) под наивное умножение матриц.
+    // A(n×m) · B(m×k) ⇒ Θ(n·m·k), специализации по k:
+    //  - k = 1  → Θ(n·m)                 (умножение матрицы на вектор — частный случай матриц)
+    //  - k = n  → Θ(n²·m)                (A: n×m, B: m×n  ИЛИ A: n×n, B: n×m и т.п.)
+    //  - k = m  → Θ(n·m²)                (A: n×m, B: m×m  ИЛИ A: m×n, B: n×m и т.п.)
+    //  - n = m  → Θ(n³)                  (классический квадратный случай)
+    //  - симметричный вариант → Θ(m³)    (если в данных варьируется m)
 
     private static IEnumerable<(string name, Func<double, double, double> f)> DefaultCandidates2D() =>
     [
@@ -71,8 +79,6 @@ public static class ComplexityApproximator
 
         if (best is null || bestFunc is null)
             return ("none", []);
-        // throw new InvalidOperationException(
-        //     "Не удалось подобрать валидного кандидата. Проверьте данные (x>0 для лог-функций).");
 
         // Возвращаем те же x, но с аппроксимированными ŷ
         var result = new List<Point>(pts.Length);
@@ -149,7 +155,8 @@ public static class ComplexityApproximator
         return (best.Value.Name, result);
     }
 
-    // МНК-оценка масштаба: c = (Σ t_i f_i)/(Σ f_i^2)
+    // МНК-оценка (метод наименьших квадратов) масштаба: c = (Σ t_i f_i)/(Σ f_i^2)
+    // где t_i — реальные времена, f_i — значения функции сложности
     private static double FitScaleLeastSquares(IReadOnlyList<double> t, IReadOnlyList<double> f)
     {
         double num = 0, den = 0;
