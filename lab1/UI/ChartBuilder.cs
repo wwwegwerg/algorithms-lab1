@@ -49,7 +49,7 @@ public class ChartBuilder
             empiricalZs[i] = new double[n];
             for (var j = 0; j < n; j++)
             {
-                empiricalZs[i][j] = cd.EmpiricalResults[i * n + j].ZAxis;
+                empiricalZs[i][j] = cd.EmpiricalResults[j * n + i].ZAxis;
             }
         }
 
@@ -68,7 +68,7 @@ public class ChartBuilder
             theoreticalZs[i] = new double[n];
             for (var j = 0; j < n; j++)
             {
-                theoreticalZs[i][j] = cd.TheoreticalResults[i * n + j].ZAxis;
+                theoreticalZs[i][j] = cd.TheoreticalResults[j * n + i].ZAxis;
             }
         }
 

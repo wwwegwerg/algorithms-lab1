@@ -182,12 +182,12 @@ public static class Experiments
         }
 
         sw.Stop();
-        var approx = ComplexityApproximator.Approximate2D(times, (x, y) => x * x * y);
+        var (funcName, approx) = ComplexityApproximator.Approximate2D(times);
         return new ChartData(
             "Обычное матричное произведение",
             times,
             approx,
-            "n^2·m",
+            funcName,
             "n (строки A / столбцы B)",
             "m (столбцы A / строки B)",
             sw.Elapsed.TotalSeconds,
