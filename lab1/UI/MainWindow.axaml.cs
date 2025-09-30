@@ -16,7 +16,7 @@ public partial class MainWindow : Window
     private static readonly string Timestamp = DateTime.Now.ToString("yyyy-MM-dd_HH-mm-ss");
     private static readonly string OutDir = Path.Combine(AppContext.BaseDirectory, Timestamp);
 
-    public MainWindow()
+    public MainWindow(string[]? args)
     {
         InitializeComponent();
 
