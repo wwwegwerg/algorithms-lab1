@@ -18,6 +18,15 @@ public static class ComplexityApproximator
         ("n^3", x => x * x * x)
     ];
 
+    private static IEnumerable<(string name, Func<double, double, double> f)> DefaultCandidates2D() =>
+    [
+        ("n * m", (n, m) => n * m),
+        ("n^2 * m", (n, m) => n * n * m),
+        ("n * m^2", (n, m) => n * m * m),
+        ("n^3", (n, m) => n * n * n),
+        ("m^3", (n, m) => m * m * m)
+    ];
+
     public static (string, List<Point>) Approximate(
         IEnumerable<Point> data)
     {
@@ -78,40 +87,66 @@ public static class ComplexityApproximator
         return (best.Value.Name, result);
     }
 
-    public static List<Point> Approximate2D(
-        IEnumerable<Point> data,
-        Func<double, double, double> func)
+    public static (string, List<Point>) Approximate2D(IEnumerable<Point> data)
     {
         var pts = data.ToArray();
 
-        var xs = new double[pts.Length];
-        var ys = new double[pts.Length];
-        var zs = new double[pts.Length];
+        var ns = new double[pts.Length]; // n (XAxis)
+        var ms = new double[pts.Length]; // m (YAxis)
+        var ts = new double[pts.Length]; // t (ZAxis = время)
         for (var i = 0; i < pts.Length; i++)
         {
-            xs[i] = pts[i].XAxis; // x = n
-            ys[i] = pts[i].YAxis; // y = m
-            zs[i] = pts[i].ZAxis; // z = время
+            ns[i] = pts[i].XAxis;
+            ms[i] = pts[i].YAxis;
+            ts[i] = pts[i].ZAxis;
         }
 
-        var fvals = new double[pts.Length];
-        for (var i = 0; i < pts.Length; i++)
+        var candidates = DefaultCandidates2D();
+        FitResult? best = null;
+        Func<double, double, double>? bestFunc = null;
+
+        foreach (var (name, f) in candidates)
         {
-            var v = func(xs[i], ys[i]);
-            if (double.IsNaN(v) || double.IsInfinity(v)) v = 0.0;
-            fvals[i] = v;
+            var fvals = new double[pts.Length];
+            var allZero = true;
+
+            for (var i = 0; i < pts.Length; i++)
+            {
+                var v = f(ns[i], ms[i]);
+                if (double.IsNaN(v) || double.IsInfinity(v)) v = 0.0;
+                fvals[i] = v;
+                if (v != 0.0) allZero = false;
+            }
+
+            if (allZero) continue;
+
+            var c = FitScaleLeastSquares(ts, fvals);
+            var tPred = new double[pts.Length];
+            for (var i = 0; i < pts.Length; i++) tPred[i] = c * fvals[i];
+
+            var r2 = RSquared(ts, tPred);
+            var fit = new FitResult(name, c, r2);
+
+            if (best is null || fit.R2 > best.Value.R2)
+            {
+                best = fit;
+                bestFunc = f;
+            }
         }
 
-        var scale = FitScaleLeastSquares(zs, fvals);
+        if (best is null || bestFunc is null)
+            return ("none", []);
 
         var result = new List<Point>(pts.Length);
         for (var i = 0; i < pts.Length; i++)
         {
-            var zHat = scale * fvals[i];
-            result.Add(new Point(xs[i], ys[i], zHat));
+            var fv = bestFunc(ns[i], ms[i]);
+            if (double.IsNaN(fv) || double.IsInfinity(fv)) fv = 0.0;
+            var zHat = best.Value.Scale * fv;
+            result.Add(new Point(ns[i], ms[i], zHat));
         }
 
-        return result;
+        return (best.Value.Name, result);
     }
 
     // МНК-оценка масштаба: c = (Σ t_i f_i)/(Σ f_i^2)
