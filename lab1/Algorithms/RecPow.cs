@@ -2,18 +2,14 @@ using lab1.Benchmarking;
 
 namespace lab1.Algorithms;
 
-public class RecPow(int[] data, double x) : ITaskWithSteps
+public class RecPow(int data, double x) : ITaskWithSteps
 {
     public int Steps { get; private set; }
 
     public void Run()
     {
-        double result;
-        foreach (var e in data)
-        {
-            result = Pow(x, e);
-            Blackhole.Consume(result);
-        }
+        var result = Pow(x, data);
+        Blackhole.Consume(result);
     }
 
     private double Pow(double @base, int exponent)

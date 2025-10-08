@@ -116,7 +116,7 @@ public static class Experiments
             "Размерность вектора v",
             "Количество шагов",
             dataSize,
-            arr => new NaivePow(arr, b));
+            n => new NaivePow(n, b));
     }
 
     public static ChartData BuildChartDataForRecPow(int dataSize)
@@ -127,7 +127,7 @@ public static class Experiments
             "Размерность вектора v",
             "Количество шагов",
             dataSize,
-            arr => new RecPow(arr, b));
+            n => new RecPow(n, b));
     }
 
     public static ChartData BuildChartDataForQuickPow(int dataSize)
@@ -138,7 +138,7 @@ public static class Experiments
             "Размерность вектора v",
             "Количество шагов",
             dataSize,
-            arr => new QuickPow(arr, b));
+            n => new QuickPow(n, b));
     }
 
     public static ChartData BuildChartDataForClassicQuickPow(int dataSize)
@@ -149,7 +149,7 @@ public static class Experiments
             "Размерность вектора v",
             "Количество шагов",
             dataSize,
-            arr => new ClassicQuickPow(arr, b));
+            n => new ClassicQuickPow(n, b));
     }
 
     public static ChartData BuildChartDataForMatrixMultiplication(int warmupCount, int repetitionsCount, int dataSize)
@@ -298,16 +298,14 @@ public static class Experiments
         string xLabel,
         string yLabel,
         int dataSize,
-        Func<int[], ITaskWithSteps> taskFactory)
+        Func<int, ITaskWithSteps> taskFactory)
     {
-        var inputs = new List<int>();
         var steps = new List<Point>(dataSize);
         var sw = Stopwatch.StartNew();
 
         for (var i = 1; i <= dataSize; i++)
         {
-            inputs.Add(i);
-            var task = taskFactory(inputs.ToArray());
+            var task = taskFactory(i);
             var step = Benchmark.MeasureStepsCount(task);
             steps.Add(new Point(i, step));
         }
